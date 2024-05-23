@@ -1,0 +1,215 @@
+﻿<Page x:Class="ClosirisDesktop.Views.Pages.CreateAccount"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:validation="clr-namespace:ClosirisDesktop.Model.Validations"
+      xmlns:local="clr-namespace:ClosirisDesktop.Views.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="610" d:DesignWidth="1000"
+      Background="{DynamicResource PrimaryBackgroundColor}"
+      Title="CreateAccount">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                   Source="/Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary 
+                   Source="/Resources/Styles/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Viewbox Stretch="Fill">
+    <Grid Width="1000"
+          Height="610">
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Resources/Images/Background.png" 
+                            Opacity="0.15"/>
+                </Grid.Background>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Image Source="/Resources/Images/BackIcon.png" 
+                       Panel.ZIndex="1"
+                       Height="40"
+                       Width="40"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Left"
+                       MouseDown="MouseDownBack"
+                       Cursor="Hand"
+                       Margin="10"/>
+
+                <Ellipse Width="200" 
+                         Height="200" 
+                         Margin="140,100,140,0" 
+                         HorizontalAlignment="Center">
+                    <Ellipse.Fill>
+                        <ImageBrush x:Name="imgbUserProfile"
+                                    ImageSource="/Resources/Images/UserIcon.png" />
+                    </Ellipse.Fill>
+                </Ellipse>
+
+                <Image Source="/Resources/Images/UploadFile.png"
+                       Grid.Row="1"
+                       Margin="0,10"
+                       Cursor="Hand"
+                       HorizontalAlignment="Center"
+                       MouseDown="MouseDownUploadImage"
+                       Height="50"/>
+
+                <TextBlock FontSize="25"
+                           Margin="0,10"
+                           FontFamily="Times New Roman"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           Grid.Row="2">
+                              <Span>Cargar imagen</Span>
+                                <LineBreak/>
+                              <Span FontSize="25">de perfil</Span>
+                </TextBlock>
+            </Grid>
+            <Grid Grid.Column="1"
+                  Background="#D3EDF6">
+                <Border CornerRadius="8"
+                         Background="#031435"
+                         Margin="25">
+                <Grid Margin="5"
+                      Background="#031435">
+                    <Grid>
+                        <Grid.Background>
+                            <ImageBrush ImageSource="/Resources/Images/Cloud.png" 
+                                        Stretch="UniformToFill" />
+                        </Grid.Background>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                            <Image Source="/Resources/Images/ClosirisLogo.png"
+                                   Width="150"
+                                   Margin="0,15,0,60"/>
+
+                            <TextBox x:Name="txtUserName"
+                                     HorizontalAlignment="Center"
+                                     Tag="Nombre"
+                                     VerticalAlignment="Center"
+                                     Width="300"
+                                     Height="40"
+                                     FontSize="20"
+                                     Margin="0,5,0,0"
+                                     Style="{DynamicResource TextBoxStyle}"           
+                                     TextChanged="TextChangedValidateName"      
+                                     KeyDown="KeyDownRegisterAccount"
+                                     Grid.Row="1">
+                                <TextBox.Text>
+                                    <Binding Path="Name"
+                                             UpdateSourceTrigger="PropertyChanged"
+                                             ValidatesOnDataErrors="True"
+                                             ValidatesOnExceptions="True"
+                                             NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <validation:NameValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock x:Name="txbErrorName" 
+                                       Margin="90,0"
+                                       Grid.Row="2"
+                                       Foreground="White"
+                                       Visibility="Collapsed"/>
+
+                            <TextBox x:Name="txtEmail"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Tag="Correo"
+                                     Width="300"
+                                     Height="40"
+                                     FontSize="20"
+                                     Margin="0,15,0,0"
+                                     Style="{DynamicResource TextBoxStyle}"
+                                     TextChanged="TextChangedValidateEmail"
+                                     KeyDown="KeyDownRegisterAccount"
+                                     Grid.Row="3">
+                                <TextBox.Text>
+                                    <Binding Path="Email"
+                                             UpdateSourceTrigger="PropertyChanged"
+                                             ValidatesOnDataErrors="True"
+                                             ValidatesOnExceptions="True"
+                                             NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <validation:EmailValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+
+                            <TextBlock x:Name="txbErrorEmail" 
+                                       Visibility="Collapsed"
+                                       Foreground="White"
+                                       Margin="90,0"
+                                       Grid.Row="4"/>
+
+                            <PasswordBox x:Name="psbUserPassword"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         MaxLength="15"
+                                         Width="300"
+                                         Height="40"
+                                         FontSize="20"
+                                         Margin="0,15,0,0"
+                                         Style="{DynamicResource PasswordBoxStylePlaceHolder}"
+                                         Tag="{x:Null}"
+                                         PasswordChanged="PasswordChangedValidatePassword"
+                                         KeyDown="KeyDownRegisterAccount"
+                                         Grid.Row="5"/>
+
+                            <TextBlock x:Name="txbErrorPassword" 
+                                       Visibility="Collapsed"
+                                       Foreground="White"
+                                       TextAlignment="Justify"
+                                       TextWrapping="Wrap"
+                                       Margin="85,0"
+                                       Grid.Row="6"/>
+
+                            <Button x:Name="btnRegister"
+                                    Content="Registrar"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Height="40"
+                                    Width="150"
+                                    FontSize="20"
+                                    Margin="0,25"
+                                    Cursor="Hand"
+                                    Click="ClickUserPlan"
+                                    IsEnabled="False"
+                                    Style="{DynamicResource ButtonStyleAccount}"
+                                    Grid.Row="7"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Viewbox>
+</Page>

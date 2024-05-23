@@ -1,0 +1,73 @@
+﻿<Page x:Class="ClosirisDesktop.Views.Pages.UserFiles"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClosirisDesktop.Views.Pages"
+      mc:Ignorable="d" 
+           d:DesignHeight="610" d:DesignWidth="1000"
+      Background="{DynamicResource SecundaryBackgroundColor}"
+      Title="Login">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                   Source="/Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary 
+                   Source="/Resources/Styles/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Viewbox Stretch="Fill">
+        <Grid x:Name="grdMain"
+              Width="1000"
+              Height="610">
+
+            <TextBox x:Name="txtSearchFile"
+                     Style="{DynamicResource TextBoxSearchStyle}" 
+                     Tag="Buscar en CloSiris"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Top"
+                     Width="400"
+                     Margin="0,30"
+                     TextChanged="TextChangedSearchFile"/>
+
+            <ComboBox x:Name="cbxSelectedExtensionFile"
+                      Style="{DynamicResource ComboBoxStyle}"
+                      ItemContainerStyle="{DynamicResource ComboBoxItemStyle}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Top"
+                      Cursor="Hand"
+                      Width="125"
+                      Height="20"
+                      Margin="0,70"
+                      SelectionChanged="SelectionChangedGetTypeFile">
+                <ComboBoxItem Content="Todos los archivos"/>
+                <ComboBoxItem Content="Imágenes"/>
+                <ComboBoxItem Content="Documentos"/>
+                <ComboBoxItem Content="Videos"/>
+                <ComboBoxItem Content="Música"/>
+            </ComboBox>
+
+            <TextBlock x:Name="txbOpenFolder"
+                       Text="Mi unidad > "
+                       FontSize="20"
+                       FontFamily="Times New Roman"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Margin="80,125"/>
+
+            <Rectangle Fill="{DynamicResource PrimaryBackgroundColor}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       Width="850"
+                       Height="2"
+                       Margin="0,150"/>
+
+            <WrapPanel x:Name="wrpFiles"
+                       Margin="80,170,80,20"/>
+        </Grid>
+    </Viewbox>
+</Page>

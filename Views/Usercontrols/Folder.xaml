@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="ClosirisDesktop.Views.Usercontrols.Folder"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClosirisDesktop.Views.Usercontrols"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Cursor="Hand" 
+          MouseDown="MouseDownUploadFile">
+        <Border CornerRadius="8"
+                Width="220"
+                Height="40"
+                Background="#D3EDF6"
+                BorderBrush="#031435"
+                BorderThickness="2">
+
+            <Grid>
+                <TextBlock x:Name="txbFolderName"
+                           Text="{Binding}" 
+                           FontFamily="Times New Roman"
+                           Foreground="Black"
+                           FontSize="15"
+                           Margin="20,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
