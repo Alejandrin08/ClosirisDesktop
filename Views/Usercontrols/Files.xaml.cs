@@ -1,5 +1,6 @@
 ﻿using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
+using ClosirisDesktop.Views.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,6 @@ namespace ClosirisDesktop.Views.Usercontrols {
     /// Lógica de interacción para Files.xaml
     /// </summary>
     public partial class Files : UserControl {
-
         public FileModel File { get; set; }
         public Files() {
             InitializeComponent();

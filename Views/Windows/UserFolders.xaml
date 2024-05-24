@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:validation="clr-namespace:ClosirisDesktop.Model.Validations"
         xmlns:local="clr-namespace:ClosirisDesktop.Views.Windows"
         mc:Ignorable="d"
                 Height="450" 
@@ -73,7 +74,26 @@
                              Margin="150,225,150,155"
                              TextChanged="TextChangedValidateFolderName"
                              Height="30"
-                             Width="250"/>
+                             Width="250">
+                        <TextBox.Text>
+                            <Binding Path="FolderName"
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True"
+                                     ValidatesOnExceptions="True"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                        <validation:FolderNameValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
+                    <TextBlock x:Name="tbkErrorFolderNameWithoutFiles"
+                               FontSize="12"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Visibility="Collapsed"/>
 
                     <Button x:Name="btnCreateFolder"
                             Style="{DynamicResource ButtonStyleAccount}"
@@ -117,7 +137,28 @@
                              Margin="0,120,220,0"
                              TextChanged="TextChangedValidateFolderName"
                              Height="30"
-                             Width="250"/>
+                             Width="250">
+                        <TextBox.Text>
+                            <Binding Path="FolderName"
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True"
+                                     ValidatesOnExceptions="True"
+                                     NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <validation:FolderNameValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
+                    <TextBlock x:Name="tbkErrorFolderNameWithFiles"
+                               FontSize="12"
+                               Foreground="White"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Top"
+                               Margin="90,155,40,0"
+                               Visibility="Collapsed"/>
 
                     <Button x:Name="btnWithFolders"
                             Style="{DynamicResource ButtonStyleAccount}"

@@ -25,7 +25,6 @@ namespace ClosirisDesktop.Views.Usercontrols {
     /// Lógica de interacción para Folder.xaml
     /// </summary>
     public partial class Folder : UserControl {
-
         public string FolderName{ get; set; }
         public Folder() {
             InitializeComponent();
@@ -70,7 +69,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
                 int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
                 fileModel.Id = resultUploadFile;
                 int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
-
+                
                 if (resultUploadFile >= 1 && resultInsertFileOwner >= 1) {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
                 } else {

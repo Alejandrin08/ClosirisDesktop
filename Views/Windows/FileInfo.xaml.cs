@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 using Spire.Doc;
+using ClosirisDesktop.Views.Pages;
 
 namespace ClosirisDesktop.Views.Windows {
     /// <summary>
@@ -90,7 +91,7 @@ namespace ClosirisDesktop.Views.Windows {
                 pdfDocument.LoadFromStream(pdfStream);
                 using (Image image = pdfDocument.SaveAsImage(0)) {
                     using (Bitmap bitmap = new Bitmap(image)) {
-                        return ConvertBitmapToBitmapImage(bitmap);
+                        return ConvertToImage(bitmap);
                     }
                 }
             }
@@ -102,13 +103,13 @@ namespace ClosirisDesktop.Views.Windows {
                 Document document = new Document(wordStream, Spire.Doc.FileFormat.Docx);
                 using (Image image = document.SaveToImages(0, Spire.Doc.Documents.ImageType.Bitmap)) {
                     using (Bitmap bitmap = new Bitmap(image)) {
-                        return ConvertBitmapToBitmapImage(bitmap);
+                        return ConvertToImage(bitmap);
                     }
                 }
             }
         }
 
-        private BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap) {
+        private BitmapImage ConvertToImage(Bitmap bitmap) {
             using (MemoryStream memory = new MemoryStream()) {
                 bitmap.Save(memory, ImageFormat.Png);
                 memory.Position = 0;

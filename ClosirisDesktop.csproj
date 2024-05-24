@@ -152,6 +152,7 @@
     <Compile Include="Model\Utilities\LoggerManager.cs" />
     <Compile Include="Model\Utilities\Singleton.cs" />
     <Compile Include="Model\Validations\EmailValidationRule.cs" />
+    <Compile Include="Model\Validations\FolderNameValidationRule.cs" />
     <Compile Include="Model\Validations\NameValidationRule.cs" />
     <Compile Include="Model\Validations\PasswordValidationRule.cs" />
     <Compile Include="Model\Validations\TokenValidationRule.cs" />

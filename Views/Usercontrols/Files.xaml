@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Image x:Name="imgFileImage"
-                       Source="/Resources/Images/PdfFile.png" 
+                       Source="{Binding FileImage}" 
                        Width="35" 
                        Height="40"
                        HorizontalAlignment="Left"
@@ -36,7 +36,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock x:Name="txbFileName"
-                               Text="Proyecto.pdf" 
+                               Text="{Binding FileName}" 
                                FontFamily="Times New Roman"
                                Foreground="White"
                                FontSize="12"
@@ -46,7 +46,7 @@
                                VerticalAlignment="Bottom"/>
 
                     <TextBlock x:Name="txbFileSize"
-                               Text="256 KB"
+                               Text="{Binding FileSize}"
                                FontFamily="Times New Roman"
                                Foreground="White"
                                FontSize="9"

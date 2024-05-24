@@ -12,7 +12,6 @@ using System.Windows.Controls;
 namespace ClosirisDesktop.Views.Pages {
     public partial class UserFiles : Page {
         private List<FileModel> allFiles = new List<FileModel>();
-
         public UserFiles() {
             InitializeComponent();
             HomeClient homeClient = Application.Current.Windows.OfType<HomeClient>().FirstOrDefault();
@@ -31,6 +30,7 @@ namespace ClosirisDesktop.Views.Pages {
 
         private void HomeClientFolderSelected(object sender, string selectedFolder) {
             txbOpenFolder.Text = "Mi unidad > " + selectedFolder;
+            Singleton.Instance.SelectedFolder = selectedFolder;
             ShowUserFiles(selectedFolder);
         }
 

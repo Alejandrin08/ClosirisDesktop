@@ -1,27 +1,13 @@
 ﻿using ClosirisDesktop.Controller;
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
-using ClosirisDesktop.Views.Pages;
+using ClosirisDesktop.Model.Validations;
 using ClosirisDesktop.Views.Usercontrols;
 using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
-using Spire.Additions.Xps.Schema;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ClosirisDesktop.Views.Windows {
     /// <summary>
@@ -30,6 +16,27 @@ namespace ClosirisDesktop.Views.Windows {
     public partial class UserFolders : Window {
         public UserFolders() {
             InitializeComponent();
+            DataContext = new FileModel();
+            SetValidationForTextBox(txtFolderName, tbkErrorFolderNameWithoutFiles);
+            SetValidationForTextBox(txtWithFolder, tbkErrorFolderNameWithFiles);
+        }
+
+        private void SetValidationForTextBox(TextBox textBox, TextBlock errorTextBlock) {
+            var validationRule = new FolderNameValidationRule {
+                ErrorTextBlock = errorTextBlock
+            };
+
+            var binding = new Binding {
+                Path = new PropertyPath("FolderName"),
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                ValidatesOnDataErrors = true,
+                ValidatesOnExceptions = true,
+                NotifyOnValidationError = true,
+                ValidationRules = { validationRule }
+            };
+
+            textBox.SetBinding(TextBox.TextProperty, binding);
+            textBox.TextChanged += TextChangedValidateFolderName;
         }
 
         private async void ClickCreateFolder(object sender, RoutedEventArgs e) {
@@ -97,13 +104,17 @@ namespace ClosirisDesktop.Views.Windows {
         }
 
         private void TextChangedValidateFolderName(object sender, TextChangedEventArgs e) {
-            if (txtFolderName.Text.Length > 0 || txtWithFolder.Text.Length > 0) {
-                btnCreateFolder.IsEnabled = true;
-                btnWithFolders.IsEnabled = true;
-            } else {
-                btnCreateFolder.IsEnabled = false;
-                btnWithFolders.IsEnabled = false;
-            }
+            bool isFolderNameValidWithoutFiles = txtFolderName.Visibility == Visibility.Visible && !Validation.GetHasError(txtFolderName);
+            bool isFolderNameValidWithFiles = txtWithFolder.Visibility == Visibility.Visible && !Validation.GetHasError(txtWithFolder);
+
+            tbkErrorFolderNameWithoutFiles.Visibility = isFolderNameValidWithoutFiles ? Visibility.Collapsed : Visibility.Visible;
+            tbkErrorFolderNameWithFiles.Visibility = isFolderNameValidWithFiles ? Visibility.Collapsed : Visibility.Visible;
+
+            bool areAllInputsValid = (!Validation.GetHasError(txtFolderName) && txtFolderName.Visibility == Visibility.Visible) &&
+                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible);
+
+            btnCreateFolder.IsEnabled = areAllInputsValid;
+            btnWithFolders.IsEnabled = areAllInputsValid;
         }
 
         private void ShowFolders() {
