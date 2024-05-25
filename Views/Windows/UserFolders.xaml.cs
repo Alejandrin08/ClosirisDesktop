@@ -2,8 +2,10 @@
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using ClosirisDesktop.Model.Validations;
+using ClosirisDesktop.Views.Pages;
 using ClosirisDesktop.Views.Usercontrols;
 using Microsoft.Win32;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,11 +16,22 @@ namespace ClosirisDesktop.Views.Windows {
     /// Lógica de interacción para UserFolders.xaml
     /// </summary>
     public partial class UserFolders : Window {
+
+        private const int MaxRows = 3;
+        private const int MaxColumns = 2;
         public UserFolders() {
             InitializeComponent();
             DataContext = new FileModel();
             SetValidationForTextBox(txtFolderName, tbkErrorFolderNameWithoutFiles);
             SetValidationForTextBox(txtWithFolder, tbkErrorFolderNameWithFiles);
+
+            var managerFilesREST = new ManagerFilesREST();
+            var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+
+            if (folders.Count == 6) {
+                btnWithFolders.Visibility = Visibility.Collapsed;
+                txtWithFolder.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void SetValidationForTextBox(TextBox textBox, TextBlock errorTextBlock) {
@@ -81,6 +94,10 @@ namespace ClosirisDesktop.Views.Windows {
 
                 if (resultUploadFile >= 1 && resultInsertFileOwner >= 1) {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                    var userFilesPage = UserFiles.UserFilesPageInstance;
+                    if (userFilesPage != null) {
+                        userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    }
                 } else {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
                 }
@@ -123,13 +140,15 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (folders != null) {
                 var wrapPanel = new WrapPanel { Orientation = Orientation.Horizontal };
-
+                int count = 0;
                 foreach (var folderName in folders) {
+                    if (count >= MaxRows * MaxColumns) break;
                     var userFolder = new Folder { FolderName = folderName };
 
                     userFolder.BindData();
                     userFolder.Margin = new Thickness(8);
                     wrpFolders.Children.Add(userFolder);
+                    count++;
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);
@@ -146,6 +165,13 @@ namespace ClosirisDesktop.Views.Windows {
                 ShowFolders();
             } else if (loadedGrid == grdWithoutFolders && grdWithoutFolders.Visibility == Visibility.Visible) {
                 grdWithFolders.Loaded -= LoadedGrid;
+            }
+        }
+
+        private void ClosesReloadFiles(object sender, EventArgs e) {
+            var userFilesPage = UserFiles.UserFilesPageInstance;
+            if (userFilesPage != null) {
+                userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
             }
         }
     }

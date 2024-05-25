@@ -12,12 +12,14 @@ using System.Windows.Controls;
 namespace ClosirisDesktop.Views.Pages {
     public partial class UserFiles : Page {
         private List<FileModel> allFiles = new List<FileModel>();
+        public static UserFiles UserFilesPageInstance { get; set; }
         public UserFiles() {
             InitializeComponent();
             HomeClient homeClient = Application.Current.Windows.OfType<HomeClient>().FirstOrDefault();
             if (homeClient != null) {
                 homeClient.FolderSelected += HomeClientFolderSelected;
             }
+            UserFilesPageInstance = this;
         }
 
         private void SelectionChangedGetTypeFile(object sender, SelectionChangedEventArgs e) {
@@ -29,9 +31,13 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void HomeClientFolderSelected(object sender, string selectedFolder) {
-            txbOpenFolder.Text = "Mi unidad > " + selectedFolder;
-            Singleton.Instance.SelectedFolder = selectedFolder;
-            ShowUserFiles(selectedFolder);
+            if (selectedFolder != null) {
+                txbOpenFolder.Text = "Mi unidad > " + selectedFolder;
+                Singleton.Instance.SelectedFolder = selectedFolder;
+                ShowUserFiles(selectedFolder);
+            } else {
+                txbOpenFolder.Text = "Mi unidad > ";
+            }
         }
 
         public async void ShowUserFiles(string selectedFolder) {

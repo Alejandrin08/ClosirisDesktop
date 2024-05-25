@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 using Spire.Doc;
 using ClosirisDesktop.Views.Pages;
+using System.Linq;
 
 namespace ClosirisDesktop.Views.Windows {
     /// <summary>
@@ -154,10 +155,24 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (resultDeleteFromServer >= 1 && resultDeleteRegistration >= 1) {
                 App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
-                Close();
+                var userFilesPage = UserFiles.UserFilesPageInstance;
+                if (userFilesPage != null && Singleton.Instance.SelectedFolder != null) {
+                    userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                }
+                CloseAndReloadParentWindow();
             } else {
                 App.ShowMessageError("Error al eliminar", "Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.");
             }
+        }
+
+        private void CloseAndReloadParentWindow() {
+            HomeClient parentWindow = Application.Current.Windows.OfType<HomeClient>().FirstOrDefault();
+
+            if (parentWindow != null) {
+                parentWindow.ReloadListView();
+            }
+
+            this.Close();
         }
     }
 }

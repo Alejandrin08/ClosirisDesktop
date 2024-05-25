@@ -9,7 +9,7 @@
     <Grid Cursor="Hand" 
           MouseDown="MouseDownUploadFile">
         <Border CornerRadius="8"
-                Width="220"
+                Width="170"
                 Height="40"
                 Background="#D3EDF6"
                 BorderBrush="#031435"

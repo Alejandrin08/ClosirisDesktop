@@ -71,7 +71,11 @@ namespace ClosirisDesktop.Views.Usercontrols {
                 int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
                 
                 if (resultUploadFile >= 1 && resultInsertFileOwner >= 1) {
-                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente"); 
+                    var userFilesPage = UserFiles.UserFilesPageInstance;
+                    if (userFilesPage != null) {
+                        userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    }
                 } else {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
                 }

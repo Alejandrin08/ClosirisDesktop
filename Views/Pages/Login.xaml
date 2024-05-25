@@ -84,6 +84,7 @@
                          Width="300"
                          Height="40"
                          FontSize="20"
+                         MaxLength="140"
                          Margin="0,5,0,0"
                          Style="{DynamicResource TextBoxStyle}"
                          TextChanged="TextChangedValidateTextBox"      
