@@ -4,6 +4,7 @@ using ClosirisDesktop.Model.Validations;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,6 +102,16 @@ namespace ClosirisDesktop.Views.Pages {
 
             if (openFileDialog.ShowDialog() == true) {
                 string filePath = openFileDialog.FileName;
+
+                FileInfo fileInfo = new FileInfo(filePath);
+                long fileSizeInBytes = fileInfo.Length;
+                long fileSizeInMB = fileSizeInBytes / (1024 * 1024); 
+
+                if (fileSizeInMB > 4) {
+                    App.ShowMessageError("El tamaño de la imagen no puede ser mayor a 4MB", "Error al cargar imagen");
+                    return;
+                }
+
                 imgbUserProfile.ImageSource = new BitmapImage(new Uri(filePath));
                 Singleton.Instance.ImageProfile = filePath;
             }

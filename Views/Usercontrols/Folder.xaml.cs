@@ -69,9 +69,10 @@ namespace ClosirisDesktop.Views.Usercontrols {
                 int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
                 fileModel.Id = resultUploadFile;
                 int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
-                
-                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1) {
-                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente"); 
+                decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
+                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0) {
+                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                    UpdateFreeStorage(fileInfo.Length);
                     var userFilesPage = UserFiles.UserFilesPageInstance;
                     if (userFilesPage != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
@@ -84,6 +85,15 @@ namespace ClosirisDesktop.Views.Usercontrols {
             }
         }
 
+        private async void UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
+            var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
+
+            if (freeStorage <= 0) {
+                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
+            }
+        }
 
         private void CloseAndReloadParentWindow() {
             HomeClient parentWindow = Application.Current.Windows.OfType<HomeClient>().FirstOrDefault();

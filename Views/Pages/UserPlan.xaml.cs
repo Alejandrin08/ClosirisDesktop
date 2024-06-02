@@ -26,11 +26,11 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
-            CreateUser("Premium", 1024);
+            CreateUser("Premium", 104857600);
         }
 
         private void ClickGetPlanBasic(object sender, RoutedEventArgs e) {
-            CreateUser("Básico", 512);
+            CreateUser("Básico", 52428800);
         }
 
         private void CreateUser(string userPlan, decimal userStorage) {

@@ -15,7 +15,6 @@ namespace ClosirisDesktop.Model {
         public string FileExtension { get; set; }
         public string FilePath { get; set; }
         public string FileBase64 { get; set; }
-        public double SizeInKB { get; private set; }
         public DateTime CreationDate { get; set; }
         public string FileImage { get; set; }
         public string Size { get; set; }
@@ -25,7 +24,7 @@ namespace ClosirisDesktop.Model {
                     return Math.Round((double)sizeInBytes / 1024, 2);
                 }
                 return 0;
-            }
+            } 
         }
 
         public string FormatCreationDate {

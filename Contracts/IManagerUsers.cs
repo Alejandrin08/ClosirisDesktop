@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
+using System.Windows.Media.Animation;
 
 namespace ClosirisDesktop.Contracts {
     public interface IManagerUsers {
@@ -14,5 +16,6 @@ namespace ClosirisDesktop.Contracts {
         bool ValidateEmailDuplicate(string email);
         UserModel GetUserInfo(string email);   
         int UpdateUserAccount(UserModel userModel);
+        Task<decimal> UpdateFreeStorage(string token, decimal storage);
     }
 }

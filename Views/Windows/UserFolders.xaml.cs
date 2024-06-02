@@ -28,7 +28,7 @@ namespace ClosirisDesktop.Views.Windows {
             var managerFilesREST = new ManagerFilesREST();
             var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
-            if (folders.Count == 6) {
+            if (folders != null && folders.Count == 6) {
                 btnWithFolders.Visibility = Visibility.Collapsed;
                 txtWithFolder.Visibility = Visibility.Collapsed;
             }
@@ -91,9 +91,10 @@ namespace ClosirisDesktop.Views.Windows {
                 int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
                 fileModel.Id = resultUploadFile;
                 int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
-
-                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1) {
+                decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
+                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0) {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                    UpdateFreeStorage(fileInfo.Length);
                     var userFilesPage = UserFiles.UserFilesPageInstance;
                     if (userFilesPage != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
@@ -102,6 +103,16 @@ namespace ClosirisDesktop.Views.Windows {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
                 }
                 CloseAndReloadParentWindow();
+            }
+        }
+
+        private async void UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
+            var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
+
+            if (freeStorage <= 0) {
+                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
             }
         }
 

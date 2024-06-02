@@ -152,8 +152,10 @@ namespace ClosirisDesktop.Views.Windows {
             ManagerFilesREST managerFilesREST = new ManagerFilesREST();
             int resultDeleteFromServer = await managerFilesREST.DeleteFileFromServer(FileModel.Id, Singleton.Instance.Token);
             int resultDeleteRegistration = await managerFilesREST.DeleteFileRegistration(FileModel.Id, Singleton.Instance.Token);
-
+            double fileSize = FileModel.FileSize;
+            long storageToUpdate = (long)(fileSize * 1024); 
             if (resultDeleteFromServer >= 1 && resultDeleteRegistration >= 1) {
+                UpdateFreeStorage(storageToUpdate);
                 App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 if (userFilesPage != null && Singleton.Instance.SelectedFolder != null) {
@@ -162,6 +164,16 @@ namespace ClosirisDesktop.Views.Windows {
                 CloseAndReloadParentWindow();
             } else {
                 App.ShowMessageError("Error al eliminar", "Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.");
+            }
+        }
+
+        private async void UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            decimal totalStorage = Singleton.Instance.TotalStorage + storageToUpdate;
+            var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
+
+            if (freeStorage <= 0) {
+                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
             }
         }
 

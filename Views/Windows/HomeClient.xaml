@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClosirisDesktop.Views.Windows"
         mc:Ignorable="d"
-                Height="650" 
+        Height="650" 
         Width="1000"
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None"
@@ -173,8 +173,9 @@
                                VerticalAlignment="Bottom"
                                Margin="10,0,0,120"/>
 
-                    <ProgressBar Value="60"
+                    <ProgressBar x:Name="prbFreeStorage"
                                  Maximum="100"
+                                 Minimum="0"
                                  Height="20"
                                  Width="100"
                                  HorizontalAlignment="Left"
@@ -182,13 +183,14 @@
                                  Style="{DynamicResource ProgressBarStyle}"
                                  Margin="10,0,0,100"/>
 
-                    <TextBlock Text="3.5 GB de 10 GB"
+                    <TextBlock x:Name="txbFreeStorage"
+                               Text="100 MB de 100 MB"
                                FontFamily="Times New Roman"
                                FontSize="15"
                                Foreground="White"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Bottom"
-                               Margin="10,0,0,80"/>
+                               Margin="0,80"/>
 
 
                     <Rectangle Fill="#D3EDF6"

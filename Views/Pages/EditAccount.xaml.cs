@@ -41,23 +41,29 @@ namespace ClosirisDesktop.Views.Pages {
 
         private void LoadUserInfo() {
             var userModel = new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+            BitmapImage bitmap = new BitmapImage();
 
             if (userModel != null) {
                 _userModel.Name = userModel.Name;
                 _userModel.Email = userModel.Email;
                 _userModel.ImageProfile = userModel.ImageProfile;
 
-                byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
-                using (var memoryStream = new MemoryStream(imageBytes)) {
-                    var bitmap = new BitmapImage();
+                if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
+                    byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
+                    using (var memoryStream = new MemoryStream(imageBytes)) {
+                        bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = memoryStream;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                    }
+                } else {
                     bitmap.BeginInit();
-                    bitmap.StreamSource = memoryStream;
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
                     bitmap.EndInit();
-
-                    imgbUserProfile.ImageSource = bitmap;
                 }
             }
+            imgbUserProfile.ImageSource = bitmap;
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {

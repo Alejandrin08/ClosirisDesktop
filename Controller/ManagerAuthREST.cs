@@ -21,9 +21,7 @@ namespace ClosirisDesktop.Controller {
                 result.EnsureSuccessStatusCode();
 
                 var content = result.Content.ReadAsStringAsync().Result;
-
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
-
                 if (response != null && !string.IsNullOrEmpty(response.Token)) {
                     Singleton.Instance.Token = response.Token;
                     return true;

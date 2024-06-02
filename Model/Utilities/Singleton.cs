@@ -24,5 +24,6 @@ namespace ClosirisDesktop.Model.Utilities {
         public string ImageProfile { get; set; } 
         public string Token { get; set; }
         public string SelectedFolder { get; set; }
+        public decimal TotalStorage { get; set; }
     }
 }

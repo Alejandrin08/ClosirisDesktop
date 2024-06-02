@@ -28,24 +28,54 @@ namespace ClosirisDesktop.Views.Windows {
         public HomeClient() {
             InitializeComponent();
             LoadImageProfile();
+            LoadFreeStorage();
             Loaded += LoadedFolders;
         }
 
         private void LoadImageProfile() {
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
             UserModel userModel = managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+            BitmapImage bitmap = new BitmapImage();
 
-            byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
-
-            using (var memoryStream = new MemoryStream(imageBytes)) {
-                var bitmap = new BitmapImage();
+            if (string.IsNullOrEmpty(userModel.ImageProfile)) {
                 bitmap.BeginInit();
-                bitmap.StreamSource = memoryStream;
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
                 bitmap.EndInit();
-
-                imgbUserImage.ImageSource = bitmap;
+            } else {
+                byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
+                using (var memoryStream = new MemoryStream(imageBytes)) {
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = memoryStream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                }
             }
+
+            imgbUserImage.ImageSource = bitmap;
+        }
+
+        public void LoadFreeStorage() {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            UserModel userModel = managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+
+            int totalStorage = 0;
+
+            if (userModel.Plan == "Premium") {
+                totalStorage = 100;
+            } else if (userModel.Plan == "Básico") {
+                totalStorage = 50;
+            }
+
+            double freeStorageMB = (double)userModel.FreeStorage / 1048576.0;
+            double freeStoragePercentage = (freeStorageMB / totalStorage) * 100;
+            Singleton.Instance.TotalStorage = userModel.FreeStorage;
+
+            int roundedFreeStorageMB = (int)Math.Floor(freeStorageMB);
+
+            txbFreeStorage.Text = $"{roundedFreeStorageMB} MB de {totalStorage} MB";
+
+            freeStoragePercentage = Math.Max(0, Math.Min(freeStoragePercentage, 100));
+            prbFreeStorage.Value = (int)freeStoragePercentage;
         }
 
         private void ClickClose(object sender, RoutedEventArgs e) {
