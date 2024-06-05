@@ -193,21 +193,25 @@
                                Margin="0,80"/>
 
 
-                    <Rectangle Fill="#D3EDF6"
+                    <Rectangle x:Name="rctUserPlan"
+                               Fill="#D3EDF6"
                                Height="50"
                                Width="105"
                                RadiusX="8"
                                RadiusY="8"
                                Stroke="Black"
                                StrokeThickness="2"
+                               Visibility="Collapsed"
                                Margin="8,0,0,20"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Bottom"/>
 
-                    <TextBlock TextWrapping="WrapWithOverflow"
+                    <TextBlock x:Name="txbUserPlan"
+                               TextWrapping="WrapWithOverflow"
                                Cursor="Hand"
                                FontFamily="Times New Roman"
                                FontSize="15"
+                               Visibility="Collapsed"
                                Foreground="Black"
                                HorizontalAlignment="Left"
                                Margin="11,0,0,28"

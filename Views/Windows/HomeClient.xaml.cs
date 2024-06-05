@@ -29,6 +29,7 @@ namespace ClosirisDesktop.Views.Windows {
             InitializeComponent();
             LoadImageProfile();
             LoadFreeStorage();
+            UpdateUserPlan();
             Loaded += LoadedFolders;
         }
 
@@ -52,6 +53,16 @@ namespace ClosirisDesktop.Views.Windows {
             }
 
             imgbUserImage.ImageSource = bitmap;
+        }
+
+        private void UpdateUserPlan() {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            UserModel userModel = managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+
+            if (userModel.Plan == "Básico") {
+                rctUserPlan.Visibility = Visibility.Visible;
+                txbUserPlan.Visibility = Visibility.Visible;
+            } 
         }
 
         public void LoadFreeStorage() {
@@ -95,7 +106,7 @@ namespace ClosirisDesktop.Views.Windows {
         }
 
         private void MouseDownGetStore(object sender, MouseButtonEventArgs e) {
-            UserPlan userPlan = new UserPlan();
+            UpdateUserPlan updateUserPlan = new UpdateUserPlan();
             MainWindow mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 
             if (mainWindow == null) {
@@ -103,7 +114,7 @@ namespace ClosirisDesktop.Views.Windows {
                 mainWindow.Show();
             }
 
-            mainWindow.fraPages.Navigate(userPlan);
+            mainWindow.fraPages.Navigate(updateUserPlan);
             this.Close();
         }
 

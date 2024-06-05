@@ -1,6 +1,6 @@
 ﻿using ClosirisDesktop.Controller;
-using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
+using ClosirisDesktop.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,22 +15,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClosirisDesktop.Views.Windows;
 
 namespace ClosirisDesktop.Views.Pages {
     /// <summary>
-    /// Lógica de interacción para UserPlan.xaml
+    /// Lógica de interacción para UpdateUserPlan.xaml
     /// </summary>
-    public partial class UserPlan : Page {
-        public UserPlan() {
+    public partial class UpdateUserPlan : Page {
+        public UpdateUserPlan() {
             InitializeComponent();
         }
 
-        private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
-            CreateUser("Premium", 104857600);
+        private void MouseDownBack(object sender, MouseButtonEventArgs e) {
+            //Añadir que se cambie de ventana y muestre el page HomeClient.
         }
 
-        private void ClickGetPlanBasic(object sender, RoutedEventArgs e) {
-            CreateUser("Básico", 52428800);
+        //Cambiar el método para que en lugar de crear el usuario se llame el endpoint para actualizar el plan.
+        private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
+            CreateUser("Premium", 104857600);
         }
 
         private void CreateUser(string userPlan, decimal userStorage) {
@@ -54,11 +56,6 @@ namespace ClosirisDesktop.Views.Pages {
             } else {
                 App.ShowMessageError("Error al crear la cuenta", "Registro fallido");
             }
-        }
-
-        private void MouseDownBack(object sender, MouseButtonEventArgs e) {
-            CreateAccount createAccount = new CreateAccount();
-            this.NavigationService.Navigate(createAccount);
         }
     }
 }

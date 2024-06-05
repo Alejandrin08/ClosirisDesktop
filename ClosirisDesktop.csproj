@@ -168,6 +168,9 @@
     <Compile Include="Views\Pages\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\UpdateUserPlan.xaml.cs">
+      <DependentUpon>UpdateUserPlan.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\UserFiles.xaml.cs">
       <DependentUpon>UserFiles.xaml</DependentUpon>
     </Compile>
@@ -242,6 +245,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Pages\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\UpdateUserPlan.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

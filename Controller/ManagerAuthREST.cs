@@ -11,6 +11,8 @@ namespace ClosirisDesktop.Controller {
     public class ManagerAuthREST : IManagerAuth {
         
         private static readonly HttpClient client = new HttpClient();
+
+        //Actualizar todos los endpoints para que sean Task y así poder usar async/await y manejar la concurrencia.
         public bool Login(string email, string password) {
             var data = new {
                 email = email,

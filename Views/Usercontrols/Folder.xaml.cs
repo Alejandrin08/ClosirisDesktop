@@ -70,7 +70,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
                 fileModel.Id = resultUploadFile;
                 int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
                 decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
-                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0) {
+                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
                     UpdateFreeStorage(fileInfo.Length);
                     var userFilesPage = UserFiles.UserFilesPageInstance;
@@ -93,6 +93,19 @@ namespace ClosirisDesktop.Views.Usercontrols {
             if (freeStorage <= 0) {
                 App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
             }
+        }
+
+        private async Task<bool> ValidateExistingFile(string fileName) {
+            bool isFileExisting = false;
+            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+            var files = await managerFilesREST.GetInfoFiles(Singleton.Instance.SelectedFolder, Singleton.Instance.Token);
+            foreach (var file in files) {
+                if (file.FileName == fileName) {
+                    isFileExisting = true;
+                    break;
+                }
+            }
+            return isFileExisting;
         }
 
         private void CloseAndReloadParentWindow() {
