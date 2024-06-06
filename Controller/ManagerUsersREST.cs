@@ -181,6 +181,33 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
+        public async Task<int> UpdateUserPlan(string token, UserModel userModel) {
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                UserModel data = new UserModel {
+                    Plan = userModel.Plan,
+                    FreeStorage = userModel.FreeStorage
+                };
+
+                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPlan", data);
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+
+                var response = JsonConvert.DeserializeObject<UserModel>(content);
+                if (response != null) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return -1;
+            }
+        }
+
         public string ConvertImageToBase64(string imagePath) {
             byte[] imageArray = File.ReadAllBytes(imagePath);
             return Convert.ToBase64String(imageArray);

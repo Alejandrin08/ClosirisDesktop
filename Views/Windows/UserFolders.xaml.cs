@@ -111,7 +111,6 @@ namespace ClosirisDesktop.Views.Windows {
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
             decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
-
             if (freeStorage <= 0) {
                 App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
             }

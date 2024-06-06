@@ -17,5 +17,6 @@ namespace ClosirisDesktop.Contracts {
         UserModel GetUserInfo(string email);   
         int UpdateUserAccount(UserModel userModel);
         Task<decimal> UpdateFreeStorage(string token, decimal storage);
+        Task<int> UpdateUserPlan(string token, UserModel userModel);
     }
 }

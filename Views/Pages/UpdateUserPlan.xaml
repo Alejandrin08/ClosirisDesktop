@@ -158,7 +158,7 @@
                         FontSize="25"
                         Cursor="Hand"
                         Background="#031435"
-                        Click="ClickGetPlanBasic"
+                        Click="ClickGetPlanPremium"
                         Foreground="White"/>
             </Grid>
         </Grid>

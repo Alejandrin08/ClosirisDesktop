@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClosirisDesktop.Views.Windows;
+using System.Windows.Media.Animation;
 
 namespace ClosirisDesktop.Views.Pages {
     /// <summary>
@@ -27,34 +28,38 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {
-            //Añadir que se cambie de ventana y muestre el page HomeClient.
+            ReturnHomeClient();
         }
 
-        //Cambiar el método para que en lugar de crear el usuario se llame el endpoint para actualizar el plan.
-        private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
-            CreateUser("Premium", 104857600);
-        }
-
-        private void CreateUser(string userPlan, decimal userStorage) {
-            UserModel userModel = new UserModel() {
-                Email = Singleton.Instance.Email,
-                Password = Singleton.Instance.Password,
-                Name = Singleton.Instance.Name,
-                ImageProfile = Singleton.Instance.ImageProfile,
-                Plan = userPlan,
-                FreeStorage = userStorage
-            };
-
+        private async void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
-            int resultUserAccount = managerUsersREST.CreateUserAccount(userModel);
-            int resultUser = managerUsersREST.CreateUser(userModel);
+            UserModel userModel =  managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+            Console.WriteLine(userModel.FreeStorage);
+            long differenceStorage = (long)(52428800 - userModel.FreeStorage);
+            userModel = new UserModel() {
+                Plan = "Premium",
+                FreeStorage = 104857600 - differenceStorage
+            };
+            Console.WriteLine(differenceStorage);
+            Console.WriteLine(userModel.FreeStorage);
+            int resultUpdateUserPlan = await managerUsersREST.UpdateUserPlan(Singleton.Instance.Token, userModel);
 
-            if (resultUserAccount > 0 && resultUser > 0) {
-                App.ShowMessageInformation("Cuenta creada con éxito", "Registro exitoso");
-                Login login = new Login();
-                this.NavigationService.Navigate(login);
+            if (resultUpdateUserPlan > 0) {
+                App.ShowMessageInformation("Plan actualizado con éxito", "Actualización exitosa");
+                ReturnHomeClient();
             } else {
-                App.ShowMessageError("Error al crear la cuenta", "Registro fallido");
+                App.ShowMessageError("Error al actualizar el plan", "Actualización fallida");
+            }
+        }
+
+        private void ReturnHomeClient() {
+            HomeClient homeClient = new HomeClient();
+            homeClient.fraPages.Navigate(new UserFiles());
+            homeClient.Show();
+
+            Window window = Window.GetWindow(this);
+            if (window != null) {
+                window.Close();
             }
         }
     }
