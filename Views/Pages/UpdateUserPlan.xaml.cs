@@ -33,15 +33,12 @@ namespace ClosirisDesktop.Views.Pages {
 
         private async void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
-            UserModel userModel =  managerUsersREST.GetUserInfo(Singleton.Instance.Token);
-            Console.WriteLine(userModel.FreeStorage);
+            UserModel userModel =  await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
             long differenceStorage = (long)(52428800 - userModel.FreeStorage);
             userModel = new UserModel() {
                 Plan = "Premium",
                 FreeStorage = 104857600 - differenceStorage
             };
-            Console.WriteLine(differenceStorage);
-            Console.WriteLine(userModel.FreeStorage);
             int resultUpdateUserPlan = await managerUsersREST.UpdateUserPlan(Singleton.Instance.Token, userModel);
 
             if (resultUpdateUserPlan > 0) {

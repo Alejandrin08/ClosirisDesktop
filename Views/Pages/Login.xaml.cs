@@ -33,12 +33,14 @@ namespace ClosirisDesktop.Views.Pages {
             this.NavigationService.Navigate(createAccount);
         }
 
-        private void ClickLogin(object sender, RoutedEventArgs e) {
-            string email = txtEmailUser.Text;
-            string password = psbUserPassword.Password;
+        private async void ClickLogin(object sender, RoutedEventArgs e) {
+            UserModel userModel = new UserModel() {
+                Email = txtEmailUser.Text,
+                Password = psbUserPassword.Password
+            };
             ManagerAuthREST managerAuthREST = new ManagerAuthREST();
 
-            bool loginSuccess = managerAuthREST.Login(email, password);
+            bool loginSuccess = await managerAuthREST.Login(userModel);
             if (loginSuccess) {
                 HomeClient homeClient = new HomeClient();
                 Window.GetWindow(this).Close();

@@ -74,8 +74,10 @@ namespace ClosirisDesktop.Views.Usercontrols {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
                     UpdateFreeStorage(fileInfo.Length);
                     var userFilesPage = UserFiles.UserFilesPageInstance;
-                    if (userFilesPage != null) {
+                    var homeClient = HomeClient.HomeClientInstance;
+                    if (userFilesPage != null && homeClient != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                        homeClient.LoadFreeStorage();
                     }
                 } else {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");

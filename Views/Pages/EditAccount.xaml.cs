@@ -39,8 +39,8 @@ namespace ClosirisDesktop.Views.Pages {
             LoadUserInfo();
         }
 
-        private void LoadUserInfo() {
-            var userModel = new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+        private async void LoadUserInfo() {
+            var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
             BitmapImage bitmap = new BitmapImage();
 
             if (userModel != null) {
@@ -112,15 +112,16 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        private void ClickEditAccount(object sender, RoutedEventArgs e) {
+        private async void ClickEditAccount(object sender, RoutedEventArgs e) {
+            string previousImageProfile = await GetPreviousImageProfile();
             UserModel userModel = new UserModel {
                 Name = txtUserName.Text,
                 Email = txtUserEmail.Text,
                 Token = Singleton.Instance.Token,
-                ImageProfile = Singleton.Instance.ImageProfile ?? GetPreviousImageProfile()
+                ImageProfile = Singleton.Instance.ImageProfile ?? previousImageProfile
             };
 
-            int result = new ManagerUsersREST().UpdateUserAccount(userModel);
+            int result = await new ManagerUsersREST().UpdateUserAccount(userModel);
 
             if (result > 0) {
                 HomeClient homeClient = new HomeClient();
@@ -135,10 +136,10 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        private string GetPreviousImageProfile() {
+        private async Task<string> GetPreviousImageProfile() {
             string result = null;
             try {
-                var userModel = new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+                var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
                 result = userModel?.ImageProfile;
             } catch (Exception ex) {
                 App.ShowMessageError("Error al obtener imagen", "Error");
