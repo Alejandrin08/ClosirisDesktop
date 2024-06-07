@@ -77,6 +77,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
                     var homeClient = HomeClient.HomeClientInstance;
                     if (userFilesPage != null && homeClient != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                        await Task.Delay(1000);
                         homeClient.LoadFreeStorage();
                     }
                 } else {

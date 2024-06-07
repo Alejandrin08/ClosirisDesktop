@@ -188,5 +188,10 @@ namespace ClosirisDesktop.Views.Windows {
 
             this.Close();
         }
+
+        private void ClickShareFile(object sender, RoutedEventArgs e) {
+            ShareFile shareFile = new ShareFile();
+            shareFile.ShowDialog();
+        }
     }
 }

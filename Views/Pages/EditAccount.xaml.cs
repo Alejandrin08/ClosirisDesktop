@@ -5,30 +5,21 @@ using ClosirisDesktop.Model.Validations;
 using ClosirisDesktop.Views.Windows;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ClosirisDesktop.Views.Pages {
-    /// <summary>
-    /// Lógica de interacción para EditAccount.xaml
-    /// </summary>
     public partial class EditAccount : Page {
 
         bool IsNameValid = false;
         bool IsEmailValid = false;
         private readonly UserModel _userModel;
+        private string _currentUserEmail; 
+
         public EditAccount() {
             InitializeComponent();
             _userModel = new UserModel();
@@ -47,6 +38,7 @@ namespace ClosirisDesktop.Views.Pages {
                 _userModel.Name = userModel.Name;
                 _userModel.Email = userModel.Email;
                 _userModel.ImageProfile = userModel.ImageProfile;
+                _currentUserEmail = userModel.Email;
 
                 if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
                     byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
@@ -121,6 +113,17 @@ namespace ClosirisDesktop.Views.Pages {
                 ImageProfile = Singleton.Instance.ImageProfile ?? previousImageProfile
             };
 
+            if (txtUserEmail.Text != _currentUserEmail) {
+                bool isEmailDuplicate = await IsEmailDuplicate(userModel.Email);
+                if (isEmailDuplicate) {
+                    txbErrorEmail.Visibility = Visibility.Visible;
+                    txbErrorEmail.Text = "El correo ya está registrado";
+                    ErrorEmailDuplicate(txtUserEmail, "El correo ya está registrado");
+                    btnEditAccount.IsEnabled = false;
+                    return; 
+                }
+            }
+
             int result = await new ManagerUsersREST().UpdateUserAccount(userModel);
 
             if (result > 0) {
@@ -134,6 +137,19 @@ namespace ClosirisDesktop.Views.Pages {
             } else {
                 App.ShowMessageError("Error al actualizar", "No se pudo actualizar la información de la cuenta");
             }
+        }
+
+        private void ErrorEmailDuplicate(TextBox textBox, string errorMessage) {
+            var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+            if (bindingExpression != null) {
+                var validationError = new ValidationError(new ExceptionValidationRule(), bindingExpression, errorMessage, null);
+                Validation.MarkInvalid(bindingExpression, validationError);
+            }
+        }
+
+        private async Task<bool> IsEmailDuplicate(string email) {
+            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            return await managerUsersREST.ValidateEmailDuplicate(email);
         }
 
         private async Task<string> GetPreviousImageProfile() {

@@ -103,8 +103,9 @@ namespace ClosirisDesktop.Views.Windows {
                     var homeClient = HomeClient.HomeClientInstance;
                     if (userFilesPage != null && homeClient != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                        await Task.Delay(1000);
                         homeClient.LoadFreeStorage();
-                    }
+                    }                    
                 } else {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
                 }
