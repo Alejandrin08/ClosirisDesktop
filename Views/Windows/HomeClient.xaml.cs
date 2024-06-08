@@ -175,7 +175,7 @@ namespace ClosirisDesktop.Views.Windows {
 
         private void MouseDownAddFolder(object sender, MouseButtonEventArgs e) {
             UserFolders userFolders = new UserFolders();
-            if (lstvFolders.Items.Count > 0) {
+            if (  lstvFolders.Items.Count > 1) {
                 userFolders.grdWithFolders.Visibility = Visibility.Visible;
                 userFolders.grdWithoutFolders.Visibility = Visibility.Hidden;
             } else {

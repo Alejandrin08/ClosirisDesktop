@@ -41,16 +41,37 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        public async void ShowUserFiles(string selectedFolder) {
+        public  void ShowUserFiles(string selectedFolder) {
             if (selectedFolder != null) {
                 wrpFiles.Children.Clear();
-                var managerFilesREST = new ManagerFilesREST();
-                var infoFile = await managerFilesREST.GetInfoFiles(selectedFolder, Singleton.Instance.Token);
-
-                if (infoFile != null && infoFile.Count > 0) {
-                    allFiles = infoFile;
-                    DisplayFiles(allFiles);
+                
+                if (selectedFolder != "Compartidos") {
+                    GetOwnFiles(selectedFolder);
+                } else {
+                    GetShareFiles();
                 }
+            }
+        }
+
+        private async void GetOwnFiles(string selectedFolder) {
+            var managerFilesREST = new ManagerFilesREST();
+            var infoFile = await managerFilesREST.GetInfoFiles(selectedFolder, Singleton.Instance.Token);
+            if (infoFile != null && infoFile.Count > 0) {
+                allFiles = infoFile;
+                DisplayFiles(allFiles);
+            } else {
+                App.ShowMessageError("Error al cargar carpetas", "No se pudieron cargar las carpetas");
+            }
+        }
+
+        private async void GetShareFiles() {
+            var managerFilesREST = new ManagerFilesREST();
+            var infoFile = await managerFilesREST.GetInfoFilesShare(Singleton.Instance.Token);
+            if (infoFile != null && infoFile.Count > 0) {
+                allFiles = infoFile;
+                DisplayFiles(allFiles);
+            } else {
+                App.ShowMessageError("No tiener archivos compartidos ", "Error al cargar carpetas");
             }
         }
 

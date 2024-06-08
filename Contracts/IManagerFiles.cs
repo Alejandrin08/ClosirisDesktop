@@ -13,6 +13,10 @@ namespace ClosirisDesktop.Contracts {
         Task<string> GetDataFile(int idFile, string token);
         Task<int> InsertFileOwner(int idFile, string token);
         Task<int> DeleteFileFromServer(int idFile, string token);
+        Task<int> DeleteFileShare(int idFile, string token);
+        Task<List<UserModel>> GetUsersShareFile(string idFile, string token);
+        Task<List<UserModel>> GetUsersOwnerFile(string idFile, string token);
+        Task<List<FileModel>> GetInfoFilesShare( string token);
         Task<int> DeleteFileRegistration(int idFile, string token);
     }
 }

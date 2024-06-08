@@ -54,11 +54,11 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
+
                 <StackPanel Orientation="Horizontal"
                             Grid.Row="0"
                             Margin="20,20,0,0">
-                    
+
                     <TextBlock Text="Correo del usuario"
                                FontSize="20"
                                VerticalAlignment="Center"
@@ -69,13 +69,14 @@
                     <TextBox x:Name="txtUserEmail"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
-                             Width="250"
+                             Width="275"
                              Height="40"
                              FontSize="20"
                              MaxLength="140"
                              Style="{DynamicResource TextBoxStyle}"
                              TextChanged="TextChangedValidateTextBox"      
-                             Grid.Row="2">
+                             Grid.Row="2" 
+                             KeyDown="KeyDownSearchUser">
                         <TextBox.Text>
                             <Binding Path="Email"
                                  UpdateSourceTrigger="PropertyChanged"
@@ -91,11 +92,20 @@
                 </StackPanel>
 
                 <TextBlock x:Name="txbEmailValidationMessage"
-                           Foreground="White"
+                           Foreground="Red"
                            FontSize="12"
                            Visibility="Collapsed"
                            Margin="210,5,0,80"
                            Grid.Row="1"/>
+
+                <TextBlock x:Name="txbShare"
+                           TextWrapping="Wrap"
+                           FontSize="20"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed"
+                           Foreground="White"
+                           Margin="20,0,223,0"
+                           Grid.Row="1" Height="85"/>
 
                 <Button x:Name="btnShareFile"
                         Content="Compartir"

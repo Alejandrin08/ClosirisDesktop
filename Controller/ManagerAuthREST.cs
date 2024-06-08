@@ -27,6 +27,7 @@ namespace ClosirisDesktop.Controller {
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
                 if (response != null && !string.IsNullOrEmpty(response.Token)) {
                     Singleton.Instance.Token = response.Token;
+                    Singleton.Instance.RoleUser = response.Role;
                     return true;
                 } else {
                     return false;
