@@ -166,10 +166,10 @@
                 </Grid.RowDefinitions>
 
                 <Ellipse Grid.Row="0"
-                         Margin="140,100,140,0"
+                         Margin="115,100,115,0"
                          HorizontalAlignment="Center"
                          Height="200"
-                         Width="150">
+                         Width="200">
                     <Ellipse.Fill>
                         <ImageBrush x:Name="imgbUserProfile"
                                     ImageSource="/Resources/Images/UserIcon.png" />

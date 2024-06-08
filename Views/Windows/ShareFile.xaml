@@ -1,0 +1,126 @@
+﻿<Window x:Class="ClosirisDesktop.Views.Windows.ShareFile"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClosirisDesktop.Views.Windows"
+        xmlns:validation="clr-namespace:ClosirisDesktop.Model.Validations"
+        mc:Ignorable="d"
+        Height="200" 
+        Width="500"
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="None"
+        Background="Transparent" 
+        AllowsTransparency="False"
+        ResizeMode="NoResize" 
+        WindowState="Normal"
+    >
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary 
+                    Source="/Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary 
+                    Source="/Resources/Styles/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid x:Name="grdMain"
+          Background="{DynamicResource PrimaryBackgroundColor}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0"   
+                        Grid.Column="4"   
+                        HorizontalAlignment="Right"  
+                        VerticalAlignment="Top"  
+                        Margin="0,5,10,0"  
+                        Height="30"   
+                        Orientation="Horizontal"   
+                        FlowDirection="RightToLeft">
+                <Button  x:Name="btnClose"  
+                         Style="{StaticResource IconButtonsStyle}"   
+                         Content="{DynamicResource Close}"   
+                         Tag="IsCloseButton"
+                         Click="ClickClose"/>
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="0"
+                            Margin="20,20,0,0">
+
+                    <TextBlock Text="Correo del usuario"
+                               FontSize="20"
+                               VerticalAlignment="Center"
+                               Foreground="White"
+                               Margin="0,0,20,0"/>
+
+
+                    <TextBox x:Name="txtUserEmail"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Width="275"
+                             Height="40"
+                             FontSize="20"
+                             MaxLength="140"
+                             Style="{DynamicResource TextBoxStyle}"
+                             TextChanged="TextChangedValidateTextBox"      
+                             Grid.Row="2" 
+                             KeyDown="KeyDownSearchUser">
+                        <TextBox.Text>
+                            <Binding Path="Email"
+                                 UpdateSourceTrigger="PropertyChanged"
+                                 ValidatesOnDataErrors="True"
+                                 ValidatesOnExceptions="True"
+                                 NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <validation:EmailValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </StackPanel>
+
+                <TextBlock x:Name="txbEmailValidationMessage"
+                           Foreground="Red"
+                           FontSize="12"
+                           Visibility="Collapsed"
+                           Margin="210,5,0,80"
+                           Grid.Row="1"/>
+
+                <TextBlock x:Name="txbShare"
+                           TextWrapping="Wrap"
+                           FontSize="20"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed"
+                           Foreground="White"
+                           Margin="20,0,223,0"
+                           Grid.Row="1" Height="85"/>
+
+                <Button x:Name="btnShareFile"
+                        Content="Compartir"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Height="40"
+                        Width="150"
+                        FontSize="20"
+                        Margin="0,0,45,0"
+                        Cursor="Hand"
+                        Click="ClickShareFile"
+                        IsEnabled="False"
+                        Style="{DynamicResource ButtonStyle}"
+                        Grid.Row="1"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

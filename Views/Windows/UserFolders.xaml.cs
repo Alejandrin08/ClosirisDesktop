@@ -171,8 +171,11 @@ namespace ClosirisDesktop.Views.Windows {
 
                     userFolder.BindData();
                     userFolder.Margin = new Thickness(8);
-                    wrpFolders.Children.Add(userFolder);
-                    count++;
+                    if(folderName!= "Compartidos") {
+                        wrpFolders.Children.Add(userFolder);
+                        count++;
+                    }
+                    
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);
