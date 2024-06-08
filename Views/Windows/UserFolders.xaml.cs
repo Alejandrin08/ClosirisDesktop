@@ -182,8 +182,6 @@ namespace ClosirisDesktop.Views.Windows {
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);
-            } else {
-                App.ShowMessageError("Error al cargar las carpetas", "No se pudieron cargar las carpetas");
             }
         }
 

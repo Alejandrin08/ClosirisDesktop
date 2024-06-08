@@ -31,31 +31,39 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private async void LoadUserInfo() {
-            var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
-            BitmapImage bitmap = new BitmapImage();
+            try {
+                var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+                BitmapImage bitmap = new BitmapImage();
 
-            if (userModel != null) {
-                _userModel.Name = userModel.Name;
-                _userModel.Email = userModel.Email;
-                _userModel.ImageProfile = userModel.ImageProfile;
-                _currentUserEmail = userModel.Email;
+                if (userModel != null) {
+                    _userModel.Name = userModel.Name;
+                    _userModel.Email = userModel.Email;
+                    _userModel.ImageProfile = userModel.ImageProfile;
+                    _currentUserEmail = userModel.Email;
 
-                if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
-                    byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
-                    using (var memoryStream = new MemoryStream(imageBytes)) {
-                        bitmap = new BitmapImage();
+                    if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
+                        byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
+                        using (var memoryStream = new MemoryStream(imageBytes)) {
+                            bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = memoryStream;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+                    } else {
                         bitmap.BeginInit();
-                        bitmap.StreamSource = memoryStream;
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
                         bitmap.EndInit();
                     }
-                } else {
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
-                    bitmap.EndInit();
                 }
+                imgbUserProfile.ImageSource = bitmap;
+            } catch (InvalidOperationException ex) {
+                LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+            } catch (NullReferenceException ex) {
+                LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
             }
-            imgbUserProfile.ImageSource = bitmap;
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {

@@ -36,35 +36,51 @@ namespace ClosirisDesktop.Views.Windows {
         }
 
         private async void LoadImageProfile() {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
-            UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
-            BitmapImage bitmap = new BitmapImage();
+            try {
+                ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+                UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+                BitmapImage bitmap = new BitmapImage();
 
-            if (string.IsNullOrEmpty(userModel.ImageProfile)) {
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
-                bitmap.EndInit();
-            } else {
-                byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
-                using (var memoryStream = new MemoryStream(imageBytes)) {
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = memoryStream;
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
+                if (userModel == null) {
+                    LoggerManager.Instance.LogError("UserModel es null.");
+                    App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                    return;
                 }
-            }
 
-            imgbUserImage.ImageSource = bitmap;
+                if (string.IsNullOrEmpty(userModel.ImageProfile)) {
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
+                    bitmap.EndInit();
+                } else {
+                    byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
+                    using (var memoryStream = new MemoryStream(imageBytes)) {
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = memoryStream;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                    }
+                }
+
+                imgbUserImage.ImageSource = bitmap;
+            } catch (InvalidOperationException ex) {
+                LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+            }
         }
 
         private async void UpdateUserPlan() {
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
             UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
 
+            if (userModel == null) {
+                LoggerManager.Instance.LogError("UserModel es null.");
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                return;
+            }
             if (userModel.Plan == "Básico") {
                 rctUserPlan.Visibility = Visibility.Visible;
                 txbUserPlan.Visibility = Visibility.Visible;
-            } 
+            }
         }
 
         public async void LoadFreeStorage() {
@@ -72,6 +88,12 @@ namespace ClosirisDesktop.Views.Windows {
             UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
 
             int totalStorage = 0;
+
+            if (userModel == null) {
+                LoggerManager.Instance.LogError("UserModel es null.");
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                return;
+            }
 
             if (userModel.Plan == "Premium") {
                 totalStorage = 100;
@@ -177,7 +199,7 @@ namespace ClosirisDesktop.Views.Windows {
         }
 
         public void ReloadListView() {
-            LoadedFolders(null, null); 
+            LoadedFolders(null, null);
         }
 
         private void SelectionChangedGetFolderFiles(object sender, SelectionChangedEventArgs e) {

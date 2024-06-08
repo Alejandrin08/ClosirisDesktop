@@ -16,6 +16,11 @@ namespace ClosirisDesktop.Controller {
         public async Task<bool> Login(UserModel userModel) {
             try {
                 var result = await client.PostAsJsonAsync("http://localhost:5089/api", userModel);
+
+                if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest) {
+                    return false;
+                }
+
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
