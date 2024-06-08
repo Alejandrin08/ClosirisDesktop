@@ -70,7 +70,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="1 GB"
+                <TextBlock Text="50 MB"
                            FontFamily="Times New Roman"
                            FontSize="50"
                            HorizontalAlignment="Right"
@@ -197,7 +197,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="2 GB"
+                <TextBlock Text="100 MB"
                            FontFamily="Times New Roman"
                            FontSize="50"
                            HorizontalAlignment="Right"

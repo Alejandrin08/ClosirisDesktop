@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace ClosirisDesktop.Controller {
@@ -12,17 +13,17 @@ namespace ClosirisDesktop.Controller {
         
         private static readonly HttpClient client = new HttpClient();
 
-        //Actualizar todos los endpoints para que sean Task y así poder usar async/await y manejar la concurrencia.
-        public bool Login(string email, string password) {
-            var data = new {
-                email = email,
-                password = password
-            };
+        public async Task<bool> Login(UserModel userModel) {
             try {
-                var result = client.PostAsJsonAsync("http://localhost:5089/api", data).Result;
+                var result = await client.PostAsJsonAsync("http://localhost:5089/api", userModel);
+
+                if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest) {
+                    return false;
+                }
+
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
                 if (response != null && !string.IsNullOrEmpty(response.Token)) {
                     Singleton.Instance.Token = response.Token;

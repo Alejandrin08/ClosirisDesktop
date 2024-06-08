@@ -52,16 +52,16 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public string GetDataFile(int idFile, string token) {
+        public async Task<string> GetDataFile(int idFile, string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = client.GetAsync("http://localhost:5089/api/getFile").Result;
+                var result = await client.GetAsync("http://localhost:5089/api/getFile");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<FileModel>(content);
 
@@ -104,15 +104,15 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public List<string> GetUserFolders(string token) {
+        public async Task<List<string>> GetUserFolders(string token) {
             List<string> folders = new List<string>();
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = client.GetAsync("http://localhost:5089/api/getFoldersByUser").Result;
+                var result = await client.GetAsync("http://localhost:5089/api/getFoldersByUser");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<List<string>>(content);
 
                 folders = response ?? new List<string>();
@@ -147,10 +147,6 @@ namespace ClosirisDesktop.Controller {
                 App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
                 return -1;
             }
-        }
-
-        public Task<int> InsertFileShared(int idUserShared, int idFile, string token) {
-            throw new NotImplementedException();
         }
 
         public async Task<int> UploadFile(FileModel fileModel, string token) {
