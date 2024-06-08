@@ -92,7 +92,6 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-
         public async Task<List<FileModel>> GetInfoFiles(string folderName, string token) {
             List<FileModel> infoFiles = new List<FileModel>();
             try {
@@ -146,6 +145,7 @@ namespace ClosirisDesktop.Controller {
                 return new List<UserModel>();
             }
         }
+
         public async Task<List<UserModel>> GetUsersOwnerFile(string idFile, string token) {
             List<UserModel> infoFiles = new List<UserModel>();
             try {
@@ -167,7 +167,7 @@ namespace ClosirisDesktop.Controller {
                 return new List<UserModel>();
             }
         }
-
+      
         public async Task<List<FileModel>> GetInfoFilesShare( string token) {
             List<FileModel> infoFiles = new List<FileModel>();
             try {
