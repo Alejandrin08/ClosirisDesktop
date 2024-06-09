@@ -84,8 +84,8 @@ namespace ClosirisDesktop.Views.Windows {
             
         }
 
-        public void ClickDownloadFile(object sender, RoutedEventArgs e) {
-            string dataFile = new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
+        public async void ClickDownloadFile(object sender, RoutedEventArgs e) {
+            string dataFile = await new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
             if (!string.IsNullOrEmpty(dataFile)) {
                 SaveFile(dataFile);
             } else {
@@ -166,8 +166,8 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        private void PreviewFile() {
-            string dataFile = new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
+        private async void PreviewFile() {
+            string dataFile = await new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
 
             if (dataFile != null) {
                 switch (FileModel.FileExtension.ToUpper()) {
@@ -225,8 +225,10 @@ namespace ClosirisDesktop.Views.Windows {
                 UpdateFreeStorage(storageToUpdate);
                 App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
                 var userFilesPage = UserFiles.UserFilesPageInstance;
-                if (userFilesPage != null && Singleton.Instance.SelectedFolder != null) {
+                var homeClient = HomeClient.HomeClientInstance;
+                if (userFilesPage != null && Singleton.Instance.SelectedFolder != null && homeClient != null) {
                     userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    homeClient.LoadFreeStorage();
                 }
                 CloseAndReloadParentWindow();
             } else {

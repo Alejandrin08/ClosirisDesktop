@@ -71,16 +71,16 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public string GetDataFile(int idFile, string token) {
+        public async Task<string> GetDataFile(int idFile, string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = client.GetAsync("http://localhost:5089/api/getFile").Result;
+                var result = await client.GetAsync("http://localhost:5089/api/getFile");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<FileModel>(content);
 
@@ -91,7 +91,6 @@ namespace ClosirisDesktop.Controller {
                 return null;
             }
         }
-
 
         public async Task<List<FileModel>> GetInfoFiles(string folderName, string token) {
             List<FileModel> infoFiles = new List<FileModel>();
@@ -146,6 +145,7 @@ namespace ClosirisDesktop.Controller {
                 return new List<UserModel>();
             }
         }
+
         public async Task<List<UserModel>> GetUsersOwnerFile(string idFile, string token) {
             List<UserModel> infoFiles = new List<UserModel>();
             try {
@@ -167,7 +167,7 @@ namespace ClosirisDesktop.Controller {
                 return new List<UserModel>();
             }
         }
-
+      
         public async Task<List<FileModel>> GetInfoFilesShare( string token) {
             List<FileModel> infoFiles = new List<FileModel>();
             try {
@@ -196,15 +196,15 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public List<string> GetUserFolders(string token) {
+        public async Task<List<string>> GetUserFolders(string token) {
             List<string> folders = new List<string>();
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = client.GetAsync("http://localhost:5089/api/getFoldersByUser").Result;
+                var result = await client.GetAsync("http://localhost:5089/api/getFoldersByUser");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<List<string>>(content);
 
                 folders = response ?? new List<string>();

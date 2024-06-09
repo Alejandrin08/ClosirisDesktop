@@ -17,17 +17,12 @@ namespace ClosirisDesktop.Controller {
 
         private static readonly HttpClient client = new HttpClient();
 
-        public int CreateUser(UserModel userModel) {
-            var data = new {
-                email = userModel.Email,
-                plan = userModel.Plan,
-                freeStorage = userModel.FreeStorage,
-            };
+        public async Task<int> CreateUser(UserModel userModel) {
             try {
-                var result = client.PostAsJsonAsync("http://localhost:5089/api/user", data).Result;
+                var result = await client.PostAsJsonAsync("http://localhost:5089/api/user", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
 
@@ -43,18 +38,12 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public int CreateUserAccount(UserModel userModel) {
-            var data = new {
-                email = userModel.Email,
-                password = userModel.Password,
-                name = userModel.Name,
-                imageProfile = userModel.ImageProfile != null ? ConvertImageToBase64(userModel.ImageProfile) : null
-            };
+        public async Task<int> CreateUserAccount(UserModel userModel) {
             try {
-                var result = client.PostAsJsonAsync("http://localhost:5089/api/userAccount", data).Result;
+                var result = await client.PostAsJsonAsync("http://localhost:5089/api/userAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
 
@@ -71,17 +60,12 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public int ChangePassword(UserModel userModel) {
-            userModel = new UserModel {
-                Email = userModel.Email,
-                Password = userModel.Password,
-            };
-
+        public async Task<int> ChangePassword(UserModel userModel) {
             try {
-                var result = client.PatchAsJsonAsync("http://localhost:5089/api/patchPassword", userModel).Result;
+                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPassword", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
 
@@ -97,12 +81,12 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public bool ValidateEmailDuplicate(string email) {
+        public async Task<bool> ValidateEmailDuplicate(string email) {
             try {
-                var result = client.GetAsync($"http://localhost:5089/api/validateEmailDuplicity/{email}").Result;
+                var result = await client.GetAsync($"http://localhost:5089/api/validateEmailDuplicity/{email}");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(content);
 
@@ -118,14 +102,14 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public UserModel GetUserInfo(string token) {
+        public async Task<UserModel> GetUserInfo(string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = client.GetAsync("http://localhost:5089/api/GetUserInfoById").Result;
+                var result = await client.GetAsync("http://localhost:5089/api/GetUserInfoById");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var responseObject = JsonConvert.DeserializeObject<UserModel>(content);
                 return responseObject;
@@ -153,9 +137,7 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-
-
-        public int UpdateUserAccount(UserModel userModel) {
+        public async Task<int> UpdateUserAccount(UserModel userModel) {
             try {
                 if (!string.IsNullOrEmpty(userModel.ImageProfile) && File.Exists(userModel.ImageProfile)) {
                     userModel.ImageProfile = ConvertImageToBase64(userModel.ImageProfile);
@@ -163,10 +145,10 @@ namespace ClosirisDesktop.Controller {
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userModel.Token);
 
-                var result = client.PutAsJsonAsync("http://localhost:5089/api/putUserAccount", userModel).Result;
+                var result = await client.PutAsJsonAsync("http://localhost:5089/api/putUserAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
                 if (response != null) {
@@ -206,12 +188,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                UserModel data = new UserModel {
-                    Plan = userModel.Plan,
-                    FreeStorage = userModel.FreeStorage
-                };
-
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPlan", data);
+                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPlan", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();

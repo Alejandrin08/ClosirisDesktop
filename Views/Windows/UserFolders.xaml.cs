@@ -25,9 +25,12 @@ namespace ClosirisDesktop.Views.Windows {
             DataContext = new FileModel();
             SetValidationForTextBox(txtFolderName, tbkErrorFolderNameWithoutFiles);
             SetValidationForTextBox(txtWithFolder, tbkErrorFolderNameWithFiles);
+            LoadFolders();
+        }
 
+        private async void LoadFolders() {
             var managerFilesREST = new ManagerFilesREST();
-            var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+            var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
             if (folders != null && folders.Count == 6) {
                 btnWithFolders.Visibility = Visibility.Collapsed;
@@ -97,9 +100,12 @@ namespace ClosirisDesktop.Views.Windows {
                     App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
                     UpdateFreeStorage(fileInfo.Length);
                     var userFilesPage = UserFiles.UserFilesPageInstance;
-                    if (userFilesPage != null) {
+                    var homeClient = HomeClient.HomeClientInstance;
+                    if (userFilesPage != null && homeClient != null) {
                         userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
-                    }
+                        await Task.Delay(1000);
+                        homeClient.LoadFreeStorage();
+                    }                    
                 } else {
                     App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
                 }
@@ -158,9 +164,9 @@ namespace ClosirisDesktop.Views.Windows {
             btnWithFolders.IsEnabled = areAllInputsValid;
         }
 
-        private void ShowFolders() {
+        private async void ShowFolders() {
             var managerFilesREST = new ManagerFilesREST();
-            var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+            var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
             if (folders != null) {
                 var wrapPanel = new WrapPanel { Orientation = Orientation.Horizontal };
@@ -179,8 +185,6 @@ namespace ClosirisDesktop.Views.Windows {
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);
-            } else {
-                App.ShowMessageError("Error al cargar las carpetas", "No se pudieron cargar las carpetas");
             }
         }
 

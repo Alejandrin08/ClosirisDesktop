@@ -92,7 +92,7 @@
                                        Grid.Row="2"
                                        Foreground="White"
                                        Visibility="Collapsed"
-                                       Margin="90,0"/>
+                                       Margin="110,0"/>
 
                             <TextBox x:Name="txtUserEmail"
                                      HorizontalAlignment="Center"
@@ -124,7 +124,7 @@
                                        Grid.Row="4"
                                        Foreground="White"
                                        Visibility="Collapsed"
-                                       Margin="90,0"/>
+                                       Margin="110,0"/>
 
                             <Button x:Name="btnEditAccount"
                                     Click="ClickEditAccount"

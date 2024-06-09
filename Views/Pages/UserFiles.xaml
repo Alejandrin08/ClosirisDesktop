@@ -67,8 +67,10 @@
                        Height="2"
                        Margin="0,150"/>
 
-            <WrapPanel x:Name="wrpFiles"
-                       Margin="80,170,80,20"/>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          Margin="80,170,80,20">
+                <WrapPanel x:Name="wrpFiles"/>
+            </ScrollViewer>
         </Grid>
     </Viewbox>
 </Page>

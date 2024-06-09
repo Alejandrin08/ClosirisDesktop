@@ -213,7 +213,8 @@
                             Cursor="Hand"
                             Margin="10,0,0,0"
                             Width="70"
-                            Height="25" Click="ClickShareFile"/>
+                            Click="ClickShareFile"
+                            Height="25"/>
                 </StackPanel>
 
                 <Border Grid.Column="1"
