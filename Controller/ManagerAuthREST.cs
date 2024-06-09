@@ -55,8 +55,6 @@ namespace ClosirisDesktop.Controller {
 
                 infoFiles = response ?? new List<LogBookModel>();
 
-
-
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
