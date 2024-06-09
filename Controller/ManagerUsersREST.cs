@@ -3,6 +3,7 @@ using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -50,6 +51,7 @@ namespace ClosirisDesktop.Controller {
                     return 1;
                 } else {
                     return 0;
+                    
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
@@ -108,6 +110,23 @@ namespace ClosirisDesktop.Controller {
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
+
+                var responseObject = JsonConvert.DeserializeObject<UserModel>(content);
+                return responseObject;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return null;
+            }
+        }
+
+        public async Task< UserModel> GetUserInfoByEmail(string email) {
+
+            try {
+                var resultRequest = await client.GetAsync($"http://localhost:5089/api/GetInfoByEmail/{email}");
+                resultRequest.EnsureSuccessStatusCode();
+
+                var content = resultRequest.Content.ReadAsStringAsync().Result;
 
                 var responseObject = JsonConvert.DeserializeObject<UserModel>(content);
                 return responseObject;
@@ -190,6 +209,29 @@ namespace ClosirisDesktop.Controller {
         public string ConvertImageToBase64(string imagePath) {
             byte[] imageArray = File.ReadAllBytes(imagePath);
             return Convert.ToBase64String(imageArray);
+        }
+
+        public async Task<List<UserModel>> GetListUsers(string token) {
+            List<UserModel> infoFiles = new List<UserModel>();
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync("http://localhost:5089/api/GetListUsers");
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<UserModel>>(content);
+
+                infoFiles = response ?? new List<UserModel>();
+
+                
+
+                return infoFiles;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return new List<UserModel>();
+            }
         }
     }
 }

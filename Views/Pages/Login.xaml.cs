@@ -1,5 +1,6 @@
 ﻿using ClosirisDesktop.Controller;
 using ClosirisDesktop.Model;
+using ClosirisDesktop.Model.Utilities;
 using ClosirisDesktop.Model.Validations;
 using ClosirisDesktop.Views.Windows;
 using System.Windows;
@@ -31,9 +32,15 @@ namespace ClosirisDesktop.Views.Pages {
 
             bool loginSuccess = await managerAuthREST.Login(userModel);
             if (loginSuccess) {
-                HomeClient homeClient = new HomeClient();
-                Window.GetWindow(this).Close();
-                homeClient.Show();
+                if (Singleton.Instance.RoleUser == "Administrador") {
+                    HomeAdmi homeAdmi = new HomeAdmi();
+                    Window.GetWindow(this).Close();
+                    homeAdmi.Show();
+                } else {
+                    HomeClient homeClient = new HomeClient();
+                    Window.GetWindow(this).Close();
+                    homeClient.Show();
+                }
             } else {
                 App.ShowMessageWarning("Correo o contraseñas incorrectos", "Inicio de sesión fallido");
             }

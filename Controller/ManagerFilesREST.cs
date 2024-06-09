@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -52,6 +53,24 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
+        public async Task<int> DeleteFileShare(int idFile, string token) {
+            try {
+                client.DefaultRequestHeaders.Remove("Authorization");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Remove("file_id");
+                client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+                var result = await client.DeleteAsync("http://localhost:5089/api/deleteFileShared");
+                result.EnsureSuccessStatusCode();
+
+                return 1;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return -1;
+            }
+        }
+
         public async Task<string> GetDataFile(int idFile, string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -73,7 +92,6 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-
         public async Task<List<FileModel>> GetInfoFiles(string folderName, string token) {
             List<FileModel> infoFiles = new List<FileModel>();
             try {
@@ -82,6 +100,80 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Add("folder_name", folderName);
 
                 var result = await client.GetAsync("http://localhost:5089/api/getListOfFileInfoByUser");
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<FileModel>>(content);
+
+                infoFiles = response ?? new List<FileModel>();
+
+                foreach (var file in infoFiles) {
+                    string extension = System.IO.Path.GetExtension(file.FileName).ToLower();
+                    file.FileImage = GetIconForFile(extension);
+                    file.FileExtension = extension;
+                    file.FileName = System.IO.Path.GetFileNameWithoutExtension(file.FileName);
+                }
+
+                return infoFiles;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return new List<FileModel>();
+            }
+        }
+
+        public async Task<List<UserModel>> GetUsersShareFile(string idFile, string token) {
+            List<UserModel> infoFiles = new List<UserModel>();
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Remove("file_id");
+                client.DefaultRequestHeaders.Add("file_id", idFile);
+
+                var result = await client.GetAsync("http://localhost:5089/api/getUsersShareFile");
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<UserModel>>(content);
+
+                infoFiles = response ?? new List<UserModel>();
+
+
+                return infoFiles;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return new List<UserModel>();
+            }
+        }
+
+        public async Task<List<UserModel>> GetUsersOwnerFile(string idFile, string token) {
+            List<UserModel> infoFiles = new List<UserModel>();
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Remove("file_id");
+                client.DefaultRequestHeaders.Add("file_id", idFile);
+
+                var result = await client.GetAsync("http://localhost:5089/api/getUsersOwnerFile");
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<UserModel>>(content);
+
+                infoFiles = response ?? new List<UserModel>();
+                return infoFiles;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return new List<UserModel>();
+            }
+        }
+      
+        public async Task<List<FileModel>> GetInfoFilesShare( string token) {
+            List<FileModel> infoFiles = new List<FileModel>();
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync("http://localhost:5089/api/getListOfFileSharedByUser");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -116,6 +208,7 @@ namespace ClosirisDesktop.Controller {
                 var response = JsonConvert.DeserializeObject<List<string>>(content);
 
                 folders = response ?? new List<string>();
+                folders.Add("Compartidos");
 
                 if (folders.Count > 0) {
                     return folders;
@@ -140,6 +233,35 @@ namespace ClosirisDesktop.Controller {
 
                 var responseContent = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FileModel>(responseContent);
+
+                return response != null ? 1 : 0;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return -1;
+            }
+        }
+
+        public async  Task<int> InsertFileShared(int idUserShared, int idFile, string token) {
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Remove("file_id");
+                client.DefaultRequestHeaders.Remove("shared_id");
+                client.DefaultRequestHeaders.Add("shared_id", idUserShared.ToString());
+                client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
+
+                var result = await client.PostAsync("http://localhost:5089/api/fileShared", null);
+
+                if (result.StatusCode == HttpStatusCode.Conflict) {
+                    return 0; 
+                }
+
+                result.EnsureSuccessStatusCode();
+
+                var responseContent = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<FileModel>(responseContent);
+
+                
 
                 return response != null ? 1 : 0;
             } catch (HttpRequestException e) {

@@ -16,7 +16,9 @@ namespace ClosirisDesktop.Contracts {
         Task<bool> ValidateEmailDuplicate(string email);
         Task<UserModel> GetUserInfo(string email);   
         Task<int> UpdateUserAccount(UserModel userModel);
+        Task<UserModel> GetUserInfoByEmail(string email);
         Task<decimal> UpdateFreeStorage(string token, decimal storage);
         Task<int> UpdateUserPlan(string token, UserModel userModel);
+        Task<List<UserModel>> GetListUsers(string token);
     }
 }

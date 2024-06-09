@@ -25,5 +25,12 @@ namespace ClosirisDesktop.Model.Utilities {
         public string Token { get; set; }
         public string SelectedFolder { get; set; }
         public decimal TotalStorage { get; set; }
+
+        public string RoleUser { get; set; }
+
+        public int IdFile {  get; set; }
+
+        public int IdUserToShare { get; set; }
+
     }
 }
