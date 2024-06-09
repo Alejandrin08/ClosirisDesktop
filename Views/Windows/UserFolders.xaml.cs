@@ -6,6 +6,7 @@ using ClosirisDesktop.Views.Pages;
 using ClosirisDesktop.Views.Usercontrols;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,7 +18,7 @@ namespace ClosirisDesktop.Views.Windows {
     /// Lógica de interacción para UserFolders.xaml
     /// </summary>
     public partial class UserFolders : Window {
-
+        private List<string> _folders;  
         private const int MaxRows = 3;
         private const int MaxColumns = 2;
         public UserFolders() {
@@ -158,16 +159,31 @@ namespace ClosirisDesktop.Views.Windows {
             tbkErrorFolderNameWithFiles.Visibility = isFolderNameValidWithFiles ? Visibility.Collapsed : Visibility.Visible;
 
             bool areAllInputsValid = (!Validation.GetHasError(txtFolderName) && txtFolderName.Visibility == Visibility.Visible) &&
-                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible);
+                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible) ;
 
             btnCreateFolder.IsEnabled = areAllInputsValid;
-            btnWithFolders.IsEnabled = areAllInputsValid;
+            btnWithFolders.IsEnabled = areAllInputsValid && !ValidateDuplicityFolderName();
+        }
+
+        private bool ValidateDuplicityFolderName() {
+            bool isFolderNameValidWithFiles = false;
+            if (_folders != null &&  _folders.Count > 0) {
+                foreach (var folderName in _folders) {
+                    if (folderName == txtWithFolder.Text) {
+                        isFolderNameValidWithFiles = true;
+                        break;
+                    }
+                }
+            } else {
+                isFolderNameValidWithFiles = true;
+            }
+            return isFolderNameValidWithFiles;
         }
 
         private async void ShowFolders() {
             var managerFilesREST = new ManagerFilesREST();
             var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
-
+            _folders = folders;
             if (folders != null) {
                 var wrapPanel = new WrapPanel { Orientation = Orientation.Horizontal };
                 int count = 0;
