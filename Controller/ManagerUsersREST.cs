@@ -206,11 +206,6 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public string ConvertImageToBase64(string imagePath) {
-            byte[] imageArray = File.ReadAllBytes(imagePath);
-            return Convert.ToBase64String(imageArray);
-        }
-
         public async Task<List<UserModel>> GetListUsers(string token) {
             List<UserModel> infoFiles = new List<UserModel>();
             try {
@@ -224,14 +219,17 @@ namespace ClosirisDesktop.Controller {
 
                 infoFiles = response ?? new List<UserModel>();
 
-                
-
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
                 App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
                 return new List<UserModel>();
             }
+        }
+
+        public string ConvertImageToBase64(string imagePath) {
+            byte[] imageArray = File.ReadAllBytes(imagePath);
+            return Convert.ToBase64String(imageArray);
         }
     }
 }

@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 
 namespace ClosirisDesktop.Views.Pages {
     /// <summary>
@@ -23,6 +24,7 @@ namespace ClosirisDesktop.Views.Pages {
     /// </summary>
     public partial class ConsultAudit : Page {
         private ObservableCollection<LogBookModel> listAudit;
+        private List<LogBookModel> audit;
 
         public ConsultAudit() {
             InitializeComponent();
@@ -31,7 +33,6 @@ namespace ClosirisDesktop.Views.Pages {
         
 
         private async void InitializeListOfAudit() {
-            List<LogBookModel> audit;
             ManagerAuthREST managerAuthREST = new ManagerAuthREST();
             audit = await managerAuthREST.GetListAudit(Singleton.Instance.Token);
             if(audit != null && audit.Count > 0) {
@@ -55,11 +56,10 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ClickMakeReport(object sender, RoutedEventArgs e) {
-            
-
+            if (listAudit != null && listAudit.Count > 0) {
+                AuditReport auditReport = new AuditReport(audit);
+                NavigationService.Navigate(auditReport);
+            }
         }
-
-
-
     }
 }
