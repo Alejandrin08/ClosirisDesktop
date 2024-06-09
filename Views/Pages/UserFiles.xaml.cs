@@ -59,9 +59,7 @@ namespace ClosirisDesktop.Views.Pages {
             if (infoFile != null && infoFile.Count > 0) {
                 allFiles = infoFile;
                 DisplayFiles(allFiles);
-            } else {
-                App.ShowMessageError("Error al cargar carpetas", "No se pudieron cargar las carpetas");
-            }
+            } 
         }
 
         private async void GetShareFiles() {

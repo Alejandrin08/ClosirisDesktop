@@ -229,7 +229,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Reports\Audit.rdlc" />
+    <EmbeddedResource Include="Resources\Reports\Users.rdlc" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\ClosirisDesktop.Model.UserModel.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
