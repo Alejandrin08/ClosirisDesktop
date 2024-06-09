@@ -159,6 +159,7 @@
     <Compile Include="Controller\ManagerFilesREST.cs" />
     <Compile Include="Controller\ManagerUsersREST.cs" />
     <Compile Include="Model\FileModel.cs" />
+    <Compile Include="Model\LogBookModel.cs" />
     <Compile Include="Model\UserModel.cs" />
     <Compile Include="Model\Utilities\Email.cs" />
     <Compile Include="Model\Utilities\LoggerManager.cs" />
@@ -170,6 +171,12 @@
     <Compile Include="Model\Validations\TokenValidationRule.cs" />
     <Compile Include="Views\Pages\ChangePassword.xaml.cs">
       <DependentUpon>ChangePassword.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\ConsultAudit.xaml.cs">
+      <DependentUpon>ConsultAudit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\ConsultUsers.xaml.cs">
+      <DependentUpon>ConsultUsers.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\CreateAccount.xaml.cs">
       <DependentUpon>CreateAccount.xaml</DependentUpon>
@@ -197,6 +204,9 @@
     </Compile>
     <Compile Include="Views\Windows\FileInfo.xaml.cs">
       <DependentUpon>FileInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Windows\HomeAdmi.xaml.cs">
+      <DependentUpon>HomeAdmi.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\HomeClient.xaml.cs">
       <DependentUpon>HomeClient.xaml</DependentUpon>
@@ -251,6 +261,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Pages\ConsultAudit.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\ConsultUsers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\CreateAccount.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -284,6 +302,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Windows\FileInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Windows\HomeAdmi.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

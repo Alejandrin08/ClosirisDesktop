@@ -8,5 +8,7 @@ using System.Threading.Tasks;
 namespace ClosirisDesktop.Contracts {
     public interface IManagerAuth {
         bool Login(string email, string password);
+
+        Task<List<LogBookModel>> GetListAudit(string token);
     }
 }
