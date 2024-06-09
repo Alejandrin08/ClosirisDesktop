@@ -69,7 +69,7 @@ namespace ClosirisDesktop.Views.Pages {
                 allFiles = infoFile;
                 DisplayFiles(allFiles);
             } else {
-                App.ShowMessageError("No tiener archivos compartidos ", "Error al cargar carpetas");
+                App.ShowMessageWarning("No tiener archivos compartidos ", "Alerta");
             }
         }
 

@@ -143,6 +143,7 @@
                                HorizontalAlignment="Left"
                                VerticalAlignment="Top"
                                MouseDown="MouseDownUsers"
+                               Cursor="Hand"
                                Margin="27,130,0,0" 
                                />
 
@@ -164,6 +165,7 @@
                                Foreground="Black"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Top"
+                               Cursor="Hand"
                                Margin="27,170,0,0"/>
 
 

@@ -23,22 +23,22 @@ namespace ClosirisDesktop.Views.Pages {
     /// </summary>
     public partial class ConsultUsers : Page {
         private ObservableCollection<UserModel>  listUsers;
+        private List<UserModel> users;
         public ConsultUsers() {
             InitializeComponent();
             InitializeListOfUsers();
         }
 
         private async void InitializeListOfUsers() {
-            List<UserModel> users;
             ManagerUsersREST managerUsersREST = new ManagerUsersREST();
             users = await managerUsersREST.GetListUsers(Singleton.Instance.Token);
             if (users != null &&  users.Count > 0) {
                 dgUsers.ItemsSource = users;
                 listUsers = new ObservableCollection<UserModel>(users);
                 btnMakeReport.IsEnabled = true;
-            }
-            
+            } 
         }
+
         private void TextChangedSearchUser(object sender, TextChangedEventArgs e) {
             string searchTerm = txbSearchUser.Text.ToLower();
             if (string.IsNullOrWhiteSpace(searchTerm)) {
@@ -50,8 +50,10 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ClickMakeReport(object sender, RoutedEventArgs e) {
-
-
+            if (listUsers != null && listUsers.Count > 0) {
+                UserReport userReport = new UserReport(users);
+                NavigationService.Navigate(userReport);
+            }
         }
     }
 }
