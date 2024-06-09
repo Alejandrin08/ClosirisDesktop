@@ -174,6 +174,12 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                 var result = await client.GetAsync("http://localhost:5089/api/getListOfFileSharedByUser");
+
+                if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest || 
+                    result.StatusCode == System.Net.HttpStatusCode.NotFound) {
+                    return null;
+                }
+
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
