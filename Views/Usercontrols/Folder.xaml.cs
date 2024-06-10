@@ -36,9 +36,9 @@ namespace ClosirisDesktop.Views.Usercontrols {
             }
         }
 
-        private async void MouseDownUploadFile(object sender, RoutedEventArgs e) {
+        private void MouseDownUploadFile(object sender, RoutedEventArgs e) {
             const long MAX_FILE_SIZE = 4 * 1024 * 1024;
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+           
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Filter = "Documentos PDF (*.pdf)|*.pdf|" +
@@ -66,26 +66,32 @@ namespace ClosirisDesktop.Views.Usercontrols {
                     FolderName = txbFolderName.Text
                 };
 
-                int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
-                fileModel.Id = resultUploadFile;
-                int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
-                decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
-                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
-                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
-                    UpdateFreeStorage(fileInfo.Length);
-                    var userFilesPage = UserFiles.UserFilesPageInstance;
-                    var homeClient = HomeClient.HomeClientInstance;
-                    if (userFilesPage != null && homeClient != null) {
-                        userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
-                        await Task.Delay(1000);
-                        homeClient.LoadFreeStorage();
-                    }
-                } else {
-                    App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
-                }
+               UploadFile(fileModel, fileInfo);
 
-                CloseAndReloadParentWindow();
+                
             }
+        }
+
+        private async void UploadFile(FileModel fileModel, System.IO.FileInfo fileInfo) {
+            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+            int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
+            fileModel.Id = resultUploadFile;
+            int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
+            decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
+            if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
+                App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                UpdateFreeStorage(fileInfo.Length);
+                var userFilesPage = UserFiles.UserFilesPageInstance;
+                var homeClient = HomeClient.HomeClientInstance;
+                if (userFilesPage != null && homeClient != null) {
+                    userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    await Task.Delay(1000);
+                    homeClient.LoadFreeStorage();
+                }
+            } else {
+                App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
+            }
+            CloseAndReloadParentWindow();
         }
 
         private async void UpdateFreeStorage(long storageToUpdate) {
