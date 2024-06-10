@@ -2,6 +2,7 @@
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using Newtonsoft.Json;
+using System.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -15,9 +16,15 @@ namespace ClosirisDesktop.Controller {
         
         private static readonly HttpClient client = new HttpClient();
 
+        private readonly string baseUrl;
+
+        public ManagerAuthREST() {
+            baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
+        }
+
         public async Task<bool> Login(UserModel userModel) {
             try {
-                var result = await client.PostAsJsonAsync("http://localhost:5089/api", userModel);
+                var result = await client.PostAsJsonAsync($"{baseUrl}/api", userModel);
 
                 if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest) {
                     return false;
@@ -47,7 +54,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("http://localhost:5089/api/GetListAudit");
+                var result = await client.GetAsync($"{baseUrl}/api/Audit");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();

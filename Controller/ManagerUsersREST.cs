@@ -2,6 +2,7 @@
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using Newtonsoft.Json;
+using System.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,9 +18,15 @@ namespace ClosirisDesktop.Controller {
 
         private static readonly HttpClient client = new HttpClient();
 
+        private readonly string baseUrl;
+
+        public ManagerUsersREST() {
+            baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
+        }
+
         public async Task<int> CreateUser(UserModel userModel) {
             try {
-                var result = await client.PostAsJsonAsync("http://localhost:5089/api/user", userModel);
+                var result = await client.PostAsJsonAsync($"{baseUrl}/api/user", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -40,7 +47,7 @@ namespace ClosirisDesktop.Controller {
 
         public async Task<int> CreateUserAccount(UserModel userModel) {
             try {
-                var result = await client.PostAsJsonAsync("http://localhost:5089/api/userAccount", userModel);
+                var result = await client.PostAsJsonAsync($"{baseUrl}/api/userAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -62,7 +69,7 @@ namespace ClosirisDesktop.Controller {
 
         public async Task<int> ChangePassword(UserModel userModel) {
             try {
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPassword", userModel);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Password", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -83,7 +90,7 @@ namespace ClosirisDesktop.Controller {
 
         public async Task<bool> ValidateEmailDuplicate(string email) {
             try {
-                var result = await client.GetAsync($"http://localhost:5089/api/validateEmailDuplicity/{email}");
+                var result = await client.GetAsync($"{baseUrl}/api/EmailDuplicity/{email}");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -106,7 +113,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("http://localhost:5089/api/GetUserInfoById");
+                var result = await client.GetAsync($"{baseUrl}/api/UserInfo");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -123,7 +130,7 @@ namespace ClosirisDesktop.Controller {
         public async Task< UserModel> GetUserInfoByEmail(string email) {
 
             try {
-                var resultRequest = await client.GetAsync($"http://localhost:5089/api/GetInfoByEmail/{email}");
+                var resultRequest = await client.GetAsync($"{baseUrl}/api/Info/{email}");
                 resultRequest.EnsureSuccessStatusCode();
 
                 var content = resultRequest.Content.ReadAsStringAsync().Result;
@@ -145,7 +152,7 @@ namespace ClosirisDesktop.Controller {
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userModel.Token);
 
-                var result = await client.PutAsJsonAsync("http://localhost:5089/api/putUserAccount", userModel);
+                var result = await client.PutAsJsonAsync($"{baseUrl}/api/UserAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -170,7 +177,7 @@ namespace ClosirisDesktop.Controller {
                     freeStorage = storage
                 };
 
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchFreeStorage", data);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/FreeStorage", data);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -188,7 +195,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPlan", userModel);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Plan", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -211,7 +218,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("http://localhost:5089/api/GetListUsers");
+                var result = await client.GetAsync($"{baseUrl}/api/Users");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
