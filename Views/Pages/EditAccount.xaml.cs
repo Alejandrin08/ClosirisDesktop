@@ -147,6 +147,7 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
+
         private void ErrorEmailDuplicate(TextBox textBox, string errorMessage) {
             var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
             if (bindingExpression != null) {

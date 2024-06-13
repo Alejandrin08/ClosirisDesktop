@@ -2,6 +2,7 @@
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using Newtonsoft.Json;
+using System.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,11 @@ namespace ClosirisDesktop.Controller {
     public class ManagerFilesREST : IManagerFiles {
 
         private static readonly HttpClient client = new HttpClient();
+        private readonly string baseUrl;
+
+        public ManagerFilesREST() {
+            baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
+        }
 
         public async Task<int> DeleteFileFromServer(int idFile, string token) {
             try {
@@ -25,7 +31,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync("http://localhost:5089/api/deleteFileServerFile");
+                var result = await client.DeleteAsync($"{baseUrl}/api/ServerFile");
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -42,7 +48,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync("http://localhost:5089/api/deleteFile");
+                var result = await client.DeleteAsync($"{baseUrl}/api/File");
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -60,7 +66,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync("http://localhost:5089/api/deleteFileShared");
+                var result = await client.DeleteAsync($"{baseUrl}/api/FileShared");
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -77,7 +83,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.GetAsync("http://localhost:5089/api/getFile");
+                var result = await client.GetAsync($"{baseUrl}/api/File");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -99,7 +105,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("folder_name");
                 client.DefaultRequestHeaders.Add("folder_name", folderName);
 
-                var result = await client.GetAsync("http://localhost:5089/api/getListOfFileInfoByUser");
+                var result = await client.GetAsync($"{baseUrl}/api/FileInfo");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -129,7 +135,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile);
 
-                var result = await client.GetAsync("http://localhost:5089/api/getUsersShareFile");
+                var result = await client.GetAsync($"{baseUrl}/api/UsersShare");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -153,7 +159,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile);
 
-                var result = await client.GetAsync("http://localhost:5089/api/getUsersOwnerFile");
+                var result = await client.GetAsync($"{baseUrl}/api/UsersOwner");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -173,7 +179,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("http://localhost:5089/api/getListOfFileSharedByUser");
+                var result = await client.GetAsync($"{baseUrl}/api/FileShared");
 
                 if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest || 
                     result.StatusCode == System.Net.HttpStatusCode.NotFound) {
@@ -207,7 +213,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("http://localhost:5089/api/getFoldersByUser");
+                var result = await client.GetAsync($"{baseUrl}/api/Folders");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -234,7 +240,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.PostAsync("http://localhost:5089/api/fileowner", null);
+                var result = await client.PostAsync($"{baseUrl}/api/fileowner", null);
                 result.EnsureSuccessStatusCode();
 
                 var responseContent = await result.Content.ReadAsStringAsync();
@@ -256,7 +262,7 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Add("shared_id", idUserShared.ToString());
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.PostAsync("http://localhost:5089/api/fileShared", null);
+                var result = await client.PostAsync($"{baseUrl}/api/fileShared", null);
 
                 if (result.StatusCode == HttpStatusCode.Conflict) {
                     return 0; 
@@ -296,7 +302,7 @@ namespace ClosirisDesktop.Controller {
 
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                    var result = await client.PostAsync("http://localhost:5089/api/file", content);
+                    var result = await client.PostAsync($"{baseUrl}/api/file", content);
 
                     result.EnsureSuccessStatusCode();
 
