@@ -179,9 +179,9 @@
     <Compile Include="Contracts\IManagerAuth.cs" />
     <Compile Include="Contracts\IManagerFiles.cs" />
     <Compile Include="Contracts\IManagerUsers.cs" />
-    <Compile Include="Controller\ManagerAuthREST.cs" />
-    <Compile Include="Controller\ManagerFilesREST.cs" />
-    <Compile Include="Controller\ManagerUsersREST.cs" />
+    <Compile Include="Controller\ManagerAuthRest.cs" />
+    <Compile Include="Controller\ManagerFilesRest.cs" />
+    <Compile Include="Controller\ManagerUsersRest.cs" />
     <Compile Include="Model\FileModel.cs" />
     <Compile Include="Model\LogBookModel.cs" />
     <Compile Include="Model\UserModel.cs" />

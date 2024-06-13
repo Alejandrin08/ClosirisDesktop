@@ -89,7 +89,7 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private async Task<bool> IsEmailDuplicate(string email) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             return await managerUsersREST.ValidateEmailDuplicate(email);
         }
 

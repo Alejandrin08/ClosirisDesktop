@@ -35,7 +35,7 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private async void ClickAcceptEmail(object sender, RoutedEventArgs e) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             bool isExistEmail = await managerUsersREST.ValidateEmailDuplicate(txtUserEmail.Text);
             if (isExistEmail) {
                 btnEmail.IsEnabled = false;
@@ -61,7 +61,7 @@ namespace ClosirisDesktop.Views.Pages {
             UserModel userModel = (UserModel)DataContext;
             userModel.Email = txtUserEmail.Text;
             userModel.Password = psbUserPassword.Password;
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             if (await managerUsersREST.ChangePassword(userModel) > 0) {
                 App.ShowMessageInformation("Contraseña actualizada", "La contraseña ha sido actualizada con éxito");
                 Login login = new Login();

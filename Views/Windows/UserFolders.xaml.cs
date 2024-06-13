@@ -20,18 +20,18 @@ namespace ClosirisDesktop.Views.Windows {
     /// </summary>
     public partial class UserFolders : Window {
         private List<string> _folders;  
-        private const int MaxRows = 3;
-        private const int MaxColumns = 2;
+        private const int MAX_ROWS = 3;
+        private const int MAX_COLUMNS = 2;
         public UserFolders() {
             InitializeComponent();
             DataContext = new FileModel();
             SetValidationForTextBox(txtFolderName, tbkErrorFolderNameWithoutFiles);
             SetValidationForTextBox(txtWithFolder, tbkErrorFolderNameWithFiles);
-            LoadFolders();
+            _ = LoadFolders();
         }
 
-        private async void LoadFolders() {
-            var managerFilesREST = new ManagerFilesREST();
+        private async Task LoadFolders() {
+            var managerFilesREST = new ManagerFilesRest();
             var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
             if (folders != null && folders.Count == 6) {
@@ -93,27 +93,25 @@ namespace ClosirisDesktop.Views.Windows {
                     FilePath = openFileDialog.FileName,
                     FolderName = folderName
                 };
-                UploadFile(fileModel,fileInfo);
-                
-                
+                _ = UploadFile(fileModel, fileInfo);                
             }
         }
 
-        private async void UploadFile(FileModel fileModel, System.IO.FileInfo fileInfo) {
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+        private async Task UploadFile(FileModel fileModel, System.IO.FileInfo fileInfo) {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
             int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
             fileModel.Id = resultUploadFile;
             int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
             decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
             if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
                 App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
-                UpdateFreeStorage(fileInfo.Length);
+                _ = UpdateFreeStorage(fileInfo.Length);
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 var homeClient = HomeClient.HomeClientInstance;
                 if (userFilesPage != null && homeClient != null) {
                     userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
                     await Task.Delay(1000);
-                    homeClient.LoadFreeStorage();
+                    await homeClient.LoadFreeStorage();
                 }
             } else {
                 App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
@@ -121,8 +119,8 @@ namespace ClosirisDesktop.Views.Windows {
             CloseAndReloadParentWindow();
         }
 
-        private async void UpdateFreeStorage(long storageToUpdate) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        private async Task UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
             if (freeStorage <= 0) {
@@ -132,7 +130,7 @@ namespace ClosirisDesktop.Views.Windows {
 
         private async Task<bool> ValidateExistingFile(string fileName) {
             bool isFileExisting = false;
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
             var files = await managerFilesREST.GetInfoFiles(Singleton.Instance.SelectedFolder, Singleton.Instance.Token);
             foreach (var file in files) {
                 if (file.FileName == fileName) {
@@ -187,15 +185,15 @@ namespace ClosirisDesktop.Views.Windows {
             return isFolderNameValidWithFiles;
         }
 
-        private async void ShowFolders() {
-            var managerFilesREST = new ManagerFilesREST();
+        private async Task ShowFolders() {
+            var managerFilesREST = new ManagerFilesRest();
             var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
             _folders = folders;
             if (folders != null) {
                 var wrapPanel = new WrapPanel { Orientation = Orientation.Horizontal };
                 int count = 0;
                 foreach (var folderName in folders) {
-                    if (count >= MaxRows * MaxColumns) break;
+                    if (count >= MAX_ROWS * MAX_COLUMNS) break;
                     var userFolder = new Folder { FolderName = folderName };
 
                     userFolder.BindData();
@@ -216,7 +214,7 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (loadedGrid == grdWithFolders && grdWithFolders.Visibility == Visibility.Visible) {
                 grdWithoutFolders.Loaded -= LoadedGrid;
-                ShowFolders();
+                _ = ShowFolders();
             } else if (loadedGrid == grdWithoutFolders && grdWithoutFolders.Visibility == Visibility.Visible) {
                 grdWithFolders.Loaded -= LoadedGrid;
             }

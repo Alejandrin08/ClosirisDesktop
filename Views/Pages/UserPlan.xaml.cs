@@ -27,14 +27,14 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
-            CreateUser("Premium", 104857600);
+           _ = CreateUser("Premium", 104857600);
         }
 
         private void ClickGetPlanBasic(object sender, RoutedEventArgs e) {
-            CreateUser("Básico", 52428800);
+            _ = CreateUser("Básico", 52428800);
         }
 
-        private async void CreateUser(string userPlan, decimal userStorage) {
+        private async Task CreateUser(string userPlan, decimal userStorage) {
             UserModel userModel = new UserModel() {
                 Email = Singleton.Instance.Email,
                 Password = Singleton.Instance.Password,
@@ -44,7 +44,7 @@ namespace ClosirisDesktop.Views.Pages {
                 FreeStorage = userStorage
             };
 
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             int resultUserAccount = await managerUsersREST.CreateUserAccount(userModel);
             int resultUser = await managerUsersREST.CreateUser(userModel);
 

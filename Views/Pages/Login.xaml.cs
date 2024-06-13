@@ -28,7 +28,7 @@ namespace ClosirisDesktop.Views.Pages {
                 Email = txtEmailUser.Text,
                 Password = psbUserPassword.Password
             };
-            ManagerAuthREST managerAuthREST = new ManagerAuthREST();
+            ManagerAuthRest managerAuthREST = new ManagerAuthRest();
 
             bool loginSuccess = await managerAuthREST.Login(userModel);
             if (loginSuccess) {
@@ -40,6 +40,7 @@ namespace ClosirisDesktop.Views.Pages {
                     HomeClient homeClient = new HomeClient();
                     Window.GetWindow(this).Close();
                     homeClient.Show();
+                    Singleton.Instance.Email = txtEmailUser.Text;
                 }
             } else {
                 App.ShowMessageWarning("Correo o contraseñas incorrectos", "Inicio de sesión fallido");

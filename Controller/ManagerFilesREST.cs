@@ -16,12 +16,12 @@ using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 
 namespace ClosirisDesktop.Controller {
-    public class ManagerFilesREST : IManagerFiles {
+    public class ManagerFilesRest : IManagerFiles {
 
         private static readonly HttpClient client = new HttpClient();
         private readonly string baseUrl;
 
-        public ManagerFilesREST() {
+        public ManagerFilesRest() {
             baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
         }
 

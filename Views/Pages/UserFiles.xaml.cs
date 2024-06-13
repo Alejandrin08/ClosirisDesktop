@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -46,15 +47,15 @@ namespace ClosirisDesktop.Views.Pages {
                 wrpFiles.Children.Clear();
                 
                 if (selectedFolder != "Compartidos") {
-                    GetOwnFiles(selectedFolder);
+                    _ = GetOwnFiles(selectedFolder);
                 } else {
-                    GetShareFiles();
+                    _ = GetShareFiles();
                 }
             }
         }
 
-        private async void GetOwnFiles(string selectedFolder) {
-            var managerFilesREST = new ManagerFilesREST();
+        private async Task GetOwnFiles(string selectedFolder) {
+            var managerFilesREST = new ManagerFilesRest();
             var infoFile = await managerFilesREST.GetInfoFiles(selectedFolder, Singleton.Instance.Token);
             if (infoFile != null && infoFile.Count > 0) {
                 allFiles = infoFile;
@@ -62,8 +63,8 @@ namespace ClosirisDesktop.Views.Pages {
             } 
         }
 
-        private async void GetShareFiles() {
-            var managerFilesREST = new ManagerFilesREST();
+        private async Task GetShareFiles() {
+            var managerFilesREST = new ManagerFilesRest();
             var infoFile = await managerFilesREST.GetInfoFilesShare(Singleton.Instance.Token);
             if (infoFile != null && infoFile.Count > 0) {
                 allFiles = infoFile;
