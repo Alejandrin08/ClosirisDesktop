@@ -6,6 +6,8 @@ using ClosirisDesktop.Views.Pages;
 using ClosirisDesktop.Views.Usercontrols;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,17 +19,20 @@ namespace ClosirisDesktop.Views.Windows {
     /// Lógica de interacción para UserFolders.xaml
     /// </summary>
     public partial class UserFolders : Window {
-
-        private const int MaxRows = 3;
-        private const int MaxColumns = 2;
+        private List<string> _folders;  
+        private const int MAX_ROWS = 3;
+        private const int MAX_COLUMNS = 2;
         public UserFolders() {
             InitializeComponent();
             DataContext = new FileModel();
             SetValidationForTextBox(txtFolderName, tbkErrorFolderNameWithoutFiles);
             SetValidationForTextBox(txtWithFolder, tbkErrorFolderNameWithFiles);
+            _ = LoadFolders();
+        }
 
-            var managerFilesREST = new ManagerFilesREST();
-            var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+        private async Task LoadFolders() {
+            var managerFilesREST = new ManagerFilesRest();
+            var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
             if (folders != null && folders.Count == 6) {
                 btnWithFolders.Visibility = Visibility.Collapsed;
@@ -53,9 +58,9 @@ namespace ClosirisDesktop.Views.Windows {
             textBox.TextChanged += TextChangedValidateFolderName;
         }
 
-        private async void ClickCreateFolder(object sender, RoutedEventArgs e) {
+        private  void ClickCreateFolder(object sender, RoutedEventArgs e) {
             const long MAX_FILE_SIZE = 4 * 1024 * 1024;
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+          
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
             openFileDialog.Filter = "Documentos PDF (*.pdf)|*.pdf|" +
@@ -88,27 +93,34 @@ namespace ClosirisDesktop.Views.Windows {
                     FilePath = openFileDialog.FileName,
                     FolderName = folderName
                 };
-
-                int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
-                fileModel.Id = resultUploadFile;
-                int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
-                decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
-                if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
-                    App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
-                    UpdateFreeStorage(fileInfo.Length);
-                    var userFilesPage = UserFiles.UserFilesPageInstance;
-                    if (userFilesPage != null) {
-                        userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
-                    }
-                } else {
-                    App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
-                }
-                CloseAndReloadParentWindow();
+                _ = UploadFile(fileModel, fileInfo);                
             }
         }
 
-        private async void UpdateFreeStorage(long storageToUpdate) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        private async Task UploadFile(FileModel fileModel, System.IO.FileInfo fileInfo) {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
+            int resultUploadFile = await managerFilesREST.UploadFile(fileModel, Singleton.Instance.Token);
+            fileModel.Id = resultUploadFile;
+            int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
+            decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
+            if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
+                App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                _ = UpdateFreeStorage(fileInfo.Length);
+                var userFilesPage = UserFiles.UserFilesPageInstance;
+                var homeClient = HomeClient.HomeClientInstance;
+                if (userFilesPage != null && homeClient != null) {
+                    userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    await Task.Delay(1000);
+                    await homeClient.LoadFreeStorage();
+                }
+            } else {
+                App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
+            }
+            CloseAndReloadParentWindow();
+        }
+
+        private async Task UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
             if (freeStorage <= 0) {
@@ -118,7 +130,7 @@ namespace ClosirisDesktop.Views.Windows {
 
         private async Task<bool> ValidateExistingFile(string fileName) {
             bool isFileExisting = false;
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
             var files = await managerFilesREST.GetInfoFiles(Singleton.Instance.SelectedFolder, Singleton.Instance.Token);
             foreach (var file in files) {
                 if (file.FileName == fileName) {
@@ -152,32 +164,48 @@ namespace ClosirisDesktop.Views.Windows {
             tbkErrorFolderNameWithFiles.Visibility = isFolderNameValidWithFiles ? Visibility.Collapsed : Visibility.Visible;
 
             bool areAllInputsValid = (!Validation.GetHasError(txtFolderName) && txtFolderName.Visibility == Visibility.Visible) &&
-                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible);
+                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible) ;
 
             btnCreateFolder.IsEnabled = areAllInputsValid;
-            btnWithFolders.IsEnabled = areAllInputsValid;
+            btnWithFolders.IsEnabled = areAllInputsValid && !ValidateDuplicityFolderName();
         }
 
-        private void ShowFolders() {
-            var managerFilesREST = new ManagerFilesREST();
-            var folders = managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+        private bool ValidateDuplicityFolderName() {
+            bool isFolderNameValidWithFiles = false;
+            if (_folders != null &&  _folders.Count > 0) {
+                foreach (var folderName in _folders) {
+                    if (folderName == txtWithFolder.Text) {
+                        isFolderNameValidWithFiles = true;
+                        break;
+                    }
+                }
+            } else {
+                isFolderNameValidWithFiles = true;
+            }
+            return isFolderNameValidWithFiles;
+        }
 
+        private async Task ShowFolders() {
+            var managerFilesREST = new ManagerFilesRest();
+            var folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
+            _folders = folders;
             if (folders != null) {
                 var wrapPanel = new WrapPanel { Orientation = Orientation.Horizontal };
                 int count = 0;
                 foreach (var folderName in folders) {
-                    if (count >= MaxRows * MaxColumns) break;
+                    if (count >= MAX_ROWS * MAX_COLUMNS) break;
                     var userFolder = new Folder { FolderName = folderName };
 
                     userFolder.BindData();
                     userFolder.Margin = new Thickness(8);
-                    wrpFolders.Children.Add(userFolder);
-                    count++;
+                    if(folderName!= "Compartidos") {
+                        wrpFolders.Children.Add(userFolder);
+                        count++;
+                    }
+                    
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);
-            } else {
-                App.ShowMessageError("Error al cargar las carpetas", "No se pudieron cargar las carpetas");
             }
         }
 
@@ -186,7 +214,7 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (loadedGrid == grdWithFolders && grdWithFolders.Visibility == Visibility.Visible) {
                 grdWithoutFolders.Loaded -= LoadedGrid;
-                ShowFolders();
+                _ = ShowFolders();
             } else if (loadedGrid == grdWithoutFolders && grdWithoutFolders.Visibility == Visibility.Visible) {
                 grdWithFolders.Loaded -= LoadedGrid;
             }

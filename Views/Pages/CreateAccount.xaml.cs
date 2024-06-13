@@ -1,4 +1,5 @@
-﻿using ClosirisDesktop.Model;
+﻿using ClosirisDesktop.Controller;
+using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using ClosirisDesktop.Model.Validations;
 using Microsoft.Win32;
@@ -34,12 +35,29 @@ namespace ClosirisDesktop.Views.Pages {
             EmailValidationRule.ErrorTextBlock = txbErrorEmail;
         }
 
-        private void ClickUserPlan(object sender, RoutedEventArgs e) {
-            UserPlan userPlan = new UserPlan();
-            this.NavigationService.Navigate(userPlan);
-            Singleton.Instance.Email = txtEmail.Text;
-            Singleton.Instance.Password = psbUserPassword.Password;
-            Singleton.Instance.Name = txtUserName.Text;
+        private async void ClickUserPlan(object sender, RoutedEventArgs e) {
+            bool isEmailDuplicate = await IsEmailDuplicate(txtEmail.Text);
+            if (isEmailDuplicate) {
+                txbErrorEmail.Visibility = Visibility.Visible;
+                txbErrorEmail.Text = "El correo ya se encuentra registrado";
+                btnRegister.IsEnabled = false;
+                ErrorEmailDuplicate(txtEmail, "El correo ya se encuentra registrado");
+            } else {
+                string password = psbUserPassword.Password;
+                UserPlan userPlan = new UserPlan();
+                this.NavigationService.Navigate(userPlan);
+                Singleton.Instance.Email = txtEmail.Text;
+                Singleton.Instance.Password = password;
+                Singleton.Instance.Name = txtUserName.Text;
+            }
+        }
+
+        private void ErrorEmailDuplicate(TextBox textBox, string errorMessage) {
+            var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+            if (bindingExpression != null) {
+                var validationError = new ValidationError(new ExceptionValidationRule(), bindingExpression, errorMessage, null);
+                Validation.MarkInvalid(bindingExpression, validationError);
+            }
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {
@@ -68,6 +86,11 @@ namespace ClosirisDesktop.Views.Pages {
                 txbErrorPassword.Text = string.Empty;
                 EnabledButton();
             }
+        }
+
+        private async Task<bool> IsEmailDuplicate(string email) {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
+            return await managerUsersREST.ValidateEmailDuplicate(email);
         }
 
         private void TextChangedValidateEmail(object sender, TextChangedEventArgs e) {

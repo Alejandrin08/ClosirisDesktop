@@ -13,6 +13,8 @@ using Path = System.IO.Path;
 using Spire.Doc;
 using ClosirisDesktop.Views.Pages;
 using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ClosirisDesktop.Views.Windows {
     /// <summary>
@@ -26,23 +28,65 @@ namespace ClosirisDesktop.Views.Windows {
             InitializeComponent();
             FileModel = file;
             Binding();
-            PreviewFile();
+            _ = PreviewFile();
+            EnabledButtonShare();
         }
 
         private void ClickClose(object sender, RoutedEventArgs e) {
             Close();
         }
 
+        private void EnabledButtonShare() {            
+            if (Singleton.Instance.SelectedFolder == "Compartidos" || Singleton.Instance.RoleUser == "Básico") {
+                btnShare.IsEnabled = false;
+            } else {
+                btnShare.IsEnabled = true;
+            }
+        }
+
         private void Binding() {
+            if (Singleton.Instance.SelectedFolder == "Compartidos") {
+                txbCreation.Text = "Compartido";
+                txbUser.Text = "Usuario propietario";
+                _ = SetInfoShared();
+            } else {
+                txbCreation.Text = "Creado";
+                txbUser.Text = "Usuarios con acceso";
+                _ = SetInfoOwner();
+            }
             txbFileName.Text = FileModel.FileName;
             txbFileSize.Text = $"{FileModel.FileSize} KB";
             txbFileExtension.Text = FileModel.FileExtension;
             txbFileCreation.Text = FileModel.FormatCreationDate;
             imgIconFile.Source = new BitmapImage(new Uri(FileModel.FileImage, UriKind.Absolute));
+            
         }
 
-        public void ClickDownloadFile(object sender, RoutedEventArgs e) {
-            string dataFile = new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
+        public async Task SetInfoOwner() {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
+            string shares = "";
+            List<UserModel> users =await  managerFilesREST.GetUsersShareFile(FileModel.Id.ToString(), Singleton.Instance.Token);
+            if(users != null && users.Count > 0) {
+                foreach (var user in users) {
+                    shares = shares + user.Name + ", ";
+                }
+                txbUserShare.Text = "Creado por ti. Compartido con " + shares + ".";
+            } else {
+                txbUserShare.Text = "Creado por ti.";
+            }
+        }
+        
+        public async Task SetInfoShared() {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
+            List<UserModel> users = await managerFilesREST.GetUsersOwnerFile(FileModel.Id.ToString(), Singleton.Instance.Token);
+            foreach (var user in users) {
+                txbUserShare.Text = "Compartido por " + user.Name +".";
+            }
+            
+        }
+
+        public async void ClickDownloadFile(object sender, RoutedEventArgs e) {
+            string dataFile = await new ManagerFilesRest().GetDataFile(FileModel.Id, Singleton.Instance.Token);
             if (!string.IsNullOrEmpty(dataFile)) {
                 SaveFile(dataFile);
             } else {
@@ -123,8 +167,8 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        private void PreviewFile() {
-            string dataFile = new ManagerFilesREST().GetDataFile(FileModel.Id, Singleton.Instance.Token);
+        private async Task PreviewFile() {
+            string dataFile = await new ManagerFilesRest().GetDataFile(FileModel.Id, Singleton.Instance.Token);
 
             if (dataFile != null) {
                 switch (FileModel.FileExtension.ToUpper()) {
@@ -148,14 +192,19 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        private async void ClickDeleteFile(object sender, RoutedEventArgs e) {
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
-            int resultDeleteFromServer = await managerFilesREST.DeleteFileFromServer(FileModel.Id, Singleton.Instance.Token);
-            int resultDeleteRegistration = await managerFilesREST.DeleteFileRegistration(FileModel.Id, Singleton.Instance.Token);
-            double fileSize = FileModel.FileSize;
-            long storageToUpdate = (long)(fileSize * 1024); 
-            if (resultDeleteFromServer >= 1 && resultDeleteRegistration >= 1) {
-                UpdateFreeStorage(storageToUpdate);
+        private void ClickDeleteFile(object sender, RoutedEventArgs e) {
+            
+            if(Singleton.Instance.SelectedFolder == "Compartidos") {
+                _ = DeleteFileShare();
+            } else {
+                _ = DeleteFile();
+            }
+        }
+
+        private async Task DeleteFileShare() {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
+            int resultDeleteFileShare = await managerFilesREST.DeleteFileShare(FileModel.Id, Singleton.Instance.Token);
+            if (resultDeleteFileShare > 0) {
                 App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 if (userFilesPage != null && Singleton.Instance.SelectedFolder != null) {
@@ -167,8 +216,29 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        private async void UpdateFreeStorage(long storageToUpdate) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        private async Task DeleteFile() {
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
+            int resultDeleteFromServer = await managerFilesREST.DeleteFileFromServer(FileModel.Id, Singleton.Instance.Token);
+            int resultDeleteRegistration = await managerFilesREST.DeleteFileRegistration(FileModel.Id, Singleton.Instance.Token);
+            double fileSize = FileModel.FileSize;
+            long storageToUpdate = (long)(fileSize * 1024);
+            if (resultDeleteFromServer >= 1 && resultDeleteRegistration >= 1) {
+                _ = UpdateFreeStorage(storageToUpdate);
+                App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
+                var userFilesPage = UserFiles.UserFilesPageInstance;
+                var homeClient = HomeClient.HomeClientInstance;
+                if (userFilesPage != null && Singleton.Instance.SelectedFolder != null && homeClient != null) {
+                    userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
+                    await homeClient.LoadFreeStorage();
+                }
+                CloseAndReloadParentWindow();
+            } else {
+                App.ShowMessageError("Error al eliminar", "Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.");
+            }
+        }
+
+        private async Task UpdateFreeStorage(long storageToUpdate) {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             decimal totalStorage = Singleton.Instance.TotalStorage + storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
 
@@ -185,6 +255,12 @@ namespace ClosirisDesktop.Views.Windows {
             }
 
             this.Close();
+        }
+
+        private void ClickShareFile(object sender, RoutedEventArgs e) {
+            Singleton.Instance.IdFile = FileModel.Id;
+            ShareFile shareFile = new ShareFile();
+            shareFile.ShowDialog();
         }
     }
 }

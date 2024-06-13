@@ -2,7 +2,9 @@
 using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using Newtonsoft.Json;
+using System.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -12,21 +14,22 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ClosirisDesktop.Controller {
-    public class ManagerUsersREST : IManagerUsers {
+    public class ManagerUsersRest : IManagerUsers {
 
         private static readonly HttpClient client = new HttpClient();
 
-        public int CreateUser(UserModel userModel) {
-            var data = new {
-                email = userModel.Email,
-                plan = userModel.Plan,
-                freeStorage = userModel.FreeStorage,
-            };
+        private readonly string baseUrl;
+
+        public ManagerUsersRest() {
+            baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
+        }
+
+        public async Task<int> CreateUser(UserModel userModel) {
             try {
-                var result = client.PostAsJsonAsync("http://localhost:5089/api/user", data).Result;
+                var result = await client.PostAsJsonAsync($"{baseUrl}/api/user", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
 
@@ -42,18 +45,34 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public int CreateUserAccount(UserModel userModel) {
-            var data = new {
-                email = userModel.Email,
-                password = userModel.Password,
-                name = userModel.Name,
-                imageProfile = userModel.ImageProfile != null ? ConvertImageToBase64(userModel.ImageProfile) : null
-            };
+        public async Task<int> CreateUserAccount(UserModel userModel) {
             try {
-                var result = client.PostAsJsonAsync("http://localhost:5089/api/userAccount", data).Result;
+                var result = await client.PostAsJsonAsync($"{baseUrl}/api/userAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
+
+                var response = JsonConvert.DeserializeObject<UserModel>(content);
+
+                if (response != null) {
+                    return 1;
+                } else {
+                    return 0;
+                    
+                }
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return -1;
+            }
+        }
+
+        public async Task<int> ChangePassword(UserModel userModel) {
+            try {
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Password", userModel);
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
 
@@ -69,38 +88,12 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public int ChangePassword(UserModel userModel) {
-            userModel = new UserModel {
-                Email = userModel.Email,
-                Password = userModel.Password,
-            };
-
+        public async Task<bool> ValidateEmailDuplicate(string email) {
             try {
-                var result = client.PatchAsJsonAsync("http://localhost:5089/api/patchPassword", userModel).Result;
+                var result = await client.GetAsync($"{baseUrl}/api/EmailDuplicity/{email}");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
-
-                var response = JsonConvert.DeserializeObject<UserModel>(content);
-
-                if (response != null) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            } catch (HttpRequestException e) {
-                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
-                return -1;
-            }
-        }
-
-        public bool ValidateEmailDuplicate(string email) {
-            try {
-                var result = client.GetAsync($"http://localhost:5089/api/validateEmailDuplicity/{email}").Result;
-                result.EnsureSuccessStatusCode();
-
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(content);
 
@@ -116,14 +109,14 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public UserModel GetUserInfo(string token) {
+        public async Task<UserModel> GetUserInfo(string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = client.GetAsync("http://localhost:5089/api/GetUserInfoById").Result;
+                var result = await client.GetAsync($"{baseUrl}/api/UserInfo");
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var responseObject = JsonConvert.DeserializeObject<UserModel>(content);
                 return responseObject;
@@ -134,7 +127,28 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public int UpdateUserAccount(UserModel userModel) {
+        public async Task< UserModel> GetUserInfoByEmail(string email) {
+            try {
+                var resultRequest = await client.GetAsync($"{baseUrl}/api/Info/{email}");
+                if (resultRequest.StatusCode == System.Net.HttpStatusCode.Unauthorized || resultRequest.StatusCode == System.Net.HttpStatusCode.BadRequest || 
+                    resultRequest.StatusCode == System.Net.HttpStatusCode.NotFound) {
+                    App.ShowMessageWarning("Usuario no encontrado", "No se encontró un usuario con el correo ingresado");
+                    return null;
+                }
+                resultRequest.EnsureSuccessStatusCode();
+
+                var content = resultRequest.Content.ReadAsStringAsync().Result;
+
+                var responseObject = JsonConvert.DeserializeObject<UserModel>(content);
+                return responseObject;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return null;
+            }
+        }
+
+        public async Task<int> UpdateUserAccount(UserModel userModel) {
             try {
                 if (!string.IsNullOrEmpty(userModel.ImageProfile) && File.Exists(userModel.ImageProfile)) {
                     userModel.ImageProfile = ConvertImageToBase64(userModel.ImageProfile);
@@ -142,10 +156,10 @@ namespace ClosirisDesktop.Controller {
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userModel.Token);
 
-                var result = client.PutAsJsonAsync("http://localhost:5089/api/putUserAccount", userModel).Result;
+                var result = await client.PutAsJsonAsync($"{baseUrl}/api/UserAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
-                var content = result.Content.ReadAsStringAsync().Result;
+                var content = await result.Content.ReadAsStringAsync();
 
                 var response = JsonConvert.DeserializeObject<UserModel>(content);
                 if (response != null) {
@@ -167,7 +181,7 @@ namespace ClosirisDesktop.Controller {
                     freeStorage = storage
                 };
 
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchFreeStorage", data);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/FreeStorage", data);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -185,12 +199,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                UserModel data = new UserModel {
-                    Plan = userModel.Plan,
-                    FreeStorage = userModel.FreeStorage
-                };
-
-                var result = await client.PatchAsJsonAsync("http://localhost:5089/api/patchPlan", data);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Plan", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -205,6 +214,27 @@ namespace ClosirisDesktop.Controller {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
                 App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
                 return -1;
+            }
+        }
+
+        public async Task<List<UserModel>> GetListUsers(string token) {
+            List<UserModel> infoFiles = new List<UserModel>();
+            try {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync($"{baseUrl}/api/Users");
+                result.EnsureSuccessStatusCode();
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<UserModel>>(content);
+
+                infoFiles = response ?? new List<UserModel>();
+
+                return infoFiles;
+            } catch (HttpRequestException e) {
+                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
+                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                return new List<UserModel>();
             }
         }
 

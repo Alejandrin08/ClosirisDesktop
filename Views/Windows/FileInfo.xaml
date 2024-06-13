@@ -138,7 +138,8 @@
                                    Margin="0"
                                    Grid.Row="3"/>
 
-                        <TextBlock Text="Creado"
+                        <TextBlock x:Name="txbCreation"
+                                   
                                    FontSize="15"
                                    HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
@@ -157,45 +158,24 @@
                                    Grid.Row="5"/>
                     </Grid>
 
-                    <TextBlock Text="Usuarios con acceso"
+                    <TextBlock x:Name="txbUser"
                                FontSize="15"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Top"
+                               FontWeight="Bold"
                                Foreground="White"
                                TextWrapping="Wrap"
                                Grid.Column="1"/>
 
-                    <Image Source="/Resources/Images/UserIcon.png"
-                           Grid.Column="1"
-                           Width="30"
-                           Height="30"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"
-                           Margin="10,60,0,0"/>
+                    
 
-                    <Rectangle Fill="{DynamicResource SecundaryBackgroundColor}"
-                               Grid.Column="1"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               Width="1"
-                               Height="25"
-                               Margin="45,63,0,0"/>
-
-                    <Image Source="/Resources/Images/UserIcon.png"
-                           Grid.Column="1"
-                           Width="30"
-                           Height="30"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"
-                           Margin="50,60,0,0"/>
-
-                    <TextBlock Text="Creado por ti. Se compartio con Alejandro Sánchez"
-                               FontSize="6"
+                    <TextBlock x:Name="txbUserShare"
+                               FontSize="8"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Top"
                                Foreground="White"
                                TextWrapping="Wrap"
-                               Margin="10,95,0,0"
+                               Margin="4,55,0,0"
                                Grid.Column="1"/>
                 </Grid>
 
@@ -228,10 +208,12 @@
                             Click="ClickDeleteFile"/>
 
                     <Button Style="{DynamicResource ButtonStyleAccount}"
+                            x:Name="btnShare"
                             Content="Compartir"
                             Cursor="Hand"
                             Margin="10,0,0,0"
                             Width="70"
+                            Click="ClickShareFile"
                             Height="25"/>
                 </StackPanel>
 

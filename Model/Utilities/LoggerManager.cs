@@ -30,6 +30,10 @@ namespace ClosirisDesktop.Model.Utilities {
             Logger.Error(message, ex);
         }
 
+        public void LogError(string message) {
+            Logger.Error(message);
+        }
+
         public void LogFatal(string message, Exception ex) {
             Logger.Fatal(message, ex);
         }

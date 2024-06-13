@@ -3,6 +3,7 @@ using ClosirisDesktop.Model;
 using ClosirisDesktop.Model.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,26 +27,26 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
-            CreateUser("Premium", 104857600);
+           _ = CreateUser("Premium", 104857600);
         }
 
         private void ClickGetPlanBasic(object sender, RoutedEventArgs e) {
-            CreateUser("Básico", 52428800);
+            _ = CreateUser("Básico", 52428800);
         }
 
-        private void CreateUser(string userPlan, decimal userStorage) {
+        private async Task CreateUser(string userPlan, decimal userStorage) {
             UserModel userModel = new UserModel() {
                 Email = Singleton.Instance.Email,
                 Password = Singleton.Instance.Password,
                 Name = Singleton.Instance.Name,
-                ImageProfile = Singleton.Instance.ImageProfile,
+                ImageProfile = Singleton.Instance.ImageProfile != null ? ConvertImageToBase64(Singleton.Instance.ImageProfile) : null,
                 Plan = userPlan,
                 FreeStorage = userStorage
             };
 
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
-            int resultUserAccount = managerUsersREST.CreateUserAccount(userModel);
-            int resultUser = managerUsersREST.CreateUser(userModel);
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
+            int resultUserAccount = await managerUsersREST.CreateUserAccount(userModel);
+            int resultUser = await managerUsersREST.CreateUser(userModel);
 
             if (resultUserAccount > 0 && resultUser > 0) {
                 App.ShowMessageInformation("Cuenta creada con éxito", "Registro exitoso");
@@ -59,6 +60,11 @@ namespace ClosirisDesktop.Views.Pages {
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {
             CreateAccount createAccount = new CreateAccount();
             this.NavigationService.Navigate(createAccount);
+        }
+
+        public string ConvertImageToBase64(string imagePath) {
+            byte[] imageArray = File.ReadAllBytes(imagePath);
+            return Convert.ToBase64String(imageArray);
         }
     }
 }

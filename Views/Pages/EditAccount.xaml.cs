@@ -5,30 +5,21 @@ using ClosirisDesktop.Model.Validations;
 using ClosirisDesktop.Views.Windows;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ClosirisDesktop.Views.Pages {
-    /// <summary>
-    /// Lógica de interacción para EditAccount.xaml
-    /// </summary>
     public partial class EditAccount : Page {
 
         bool IsNameValid = false;
         bool IsEmailValid = false;
         private readonly UserModel _userModel;
+        private string _currentUserEmail; 
+
         public EditAccount() {
             InitializeComponent();
             _userModel = new UserModel();
@@ -36,34 +27,43 @@ namespace ClosirisDesktop.Views.Pages {
             NameValidationRule.ErrorTextBlock = txbErrorName;
             EmailValidationRule.ErrorTextBlock = txbErrorEmail;
 
-            LoadUserInfo();
+            _ = LoadUserInfo();
         }
 
-        private void LoadUserInfo() {
-            var userModel = new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
-            BitmapImage bitmap = new BitmapImage();
+        private async Task LoadUserInfo() {
+            try {
+                var userModel = await new ManagerUsersRest().GetUserInfo(Singleton.Instance.Token);
+                BitmapImage bitmap = new BitmapImage();
 
-            if (userModel != null) {
-                _userModel.Name = userModel.Name;
-                _userModel.Email = userModel.Email;
-                _userModel.ImageProfile = userModel.ImageProfile;
+                if (userModel != null) {
+                    _userModel.Name = userModel.Name;
+                    _userModel.Email = userModel.Email;
+                    _userModel.ImageProfile = userModel.ImageProfile;
+                    _currentUserEmail = userModel.Email;
 
-                if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
-                    byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
-                    using (var memoryStream = new MemoryStream(imageBytes)) {
-                        bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.StreamSource = memoryStream;
-                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    if (!string.IsNullOrEmpty(userModel.ImageProfile)) {
+                        byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
+                        using (var memoryStream = new MemoryStream(imageBytes)) {
+                            bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = memoryStream;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+                    } else {
+                        bitmap.BeginInit(); 
+                        bitmap.UriSource = new Uri("pack://application:,,,/ClosirisDesktop;component/Resources/Images/UserIcon.png");
                         bitmap.EndInit();
                     }
-                } else {
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
-                    bitmap.EndInit();
                 }
+                imgbUserProfile.ImageSource = bitmap;
+            } catch (InvalidOperationException ex) {
+                LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+            } catch (NullReferenceException ex) {
+                LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
+                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
             }
-            imgbUserProfile.ImageSource = bitmap;
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {
@@ -112,15 +112,27 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        private void ClickEditAccount(object sender, RoutedEventArgs e) {
+        private async void ClickEditAccount(object sender, RoutedEventArgs e) {
+            string previousImageProfile = await GetPreviousImageProfile();
             UserModel userModel = new UserModel {
                 Name = txtUserName.Text,
                 Email = txtUserEmail.Text,
                 Token = Singleton.Instance.Token,
-                ImageProfile = Singleton.Instance.ImageProfile ?? GetPreviousImageProfile()
+                ImageProfile = Singleton.Instance.ImageProfile ?? previousImageProfile
             };
 
-            int result = new ManagerUsersREST().UpdateUserAccount(userModel);
+            if (txtUserEmail.Text != _currentUserEmail) {
+                bool isEmailDuplicate = await IsEmailDuplicate(userModel.Email);
+                if (isEmailDuplicate) {
+                    txbErrorEmail.Visibility = Visibility.Visible;
+                    txbErrorEmail.Text = "El correo ya está registrado";
+                    ErrorEmailDuplicate(txtUserEmail, "El correo ya está registrado");
+                    btnEditAccount.IsEnabled = false;
+                    return; 
+                }
+            }
+
+            int result = await new ManagerUsersRest().UpdateUserAccount(userModel);
 
             if (result > 0) {
                 HomeClient homeClient = new HomeClient();
@@ -135,10 +147,24 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        private string GetPreviousImageProfile() {
+
+        private void ErrorEmailDuplicate(TextBox textBox, string errorMessage) {
+            var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);
+            if (bindingExpression != null) {
+                var validationError = new ValidationError(new ExceptionValidationRule(), bindingExpression, errorMessage, null);
+                Validation.MarkInvalid(bindingExpression, validationError);
+            }
+        }
+
+        private async Task<bool> IsEmailDuplicate(string email) {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
+            return await managerUsersREST.ValidateEmailDuplicate(email);
+        }
+
+        private async Task<string> GetPreviousImageProfile() {
             string result = null;
             try {
-                var userModel = new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+                var userModel = await new ManagerUsersRest().GetUserInfo(Singleton.Instance.Token);
                 result = userModel?.ImageProfile;
             } catch (Exception ex) {
                 App.ShowMessageError("Error al obtener imagen", "Error");

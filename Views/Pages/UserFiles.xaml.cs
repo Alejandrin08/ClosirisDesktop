@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -41,18 +42,35 @@ namespace ClosirisDesktop.Views.Pages {
             }
         }
 
-        public async void ShowUserFiles(string selectedFolder) {
+        public  void ShowUserFiles(string selectedFolder) {
             if (selectedFolder != null) {
                 wrpFiles.Children.Clear();
-                var managerFilesREST = new ManagerFilesREST();
-                var infoFile = await managerFilesREST.GetInfoFiles(selectedFolder, Singleton.Instance.Token);
-
-                if (infoFile != null && infoFile.Count > 0) {
-                    allFiles = infoFile;
-                    DisplayFiles(allFiles);
+                
+                if (selectedFolder != "Compartidos") {
+                    _ = GetOwnFiles(selectedFolder);
                 } else {
-                    App.ShowMessageError("Error al cargar carpetas", "No se pudieron cargar las carpetas");
+                    _ = GetShareFiles();
                 }
+            }
+        }
+
+        private async Task GetOwnFiles(string selectedFolder) {
+            var managerFilesREST = new ManagerFilesRest();
+            var infoFile = await managerFilesREST.GetInfoFiles(selectedFolder, Singleton.Instance.Token);
+            if (infoFile != null && infoFile.Count > 0) {
+                allFiles = infoFile;
+                DisplayFiles(allFiles);
+            } 
+        }
+
+        private async Task GetShareFiles() {
+            var managerFilesREST = new ManagerFilesRest();
+            var infoFile = await managerFilesREST.GetInfoFilesShare(Singleton.Instance.Token);
+            if (infoFile != null && infoFile.Count > 0) {
+                allFiles = infoFile;
+                DisplayFiles(allFiles);
+            } else {
+                App.ShowMessageWarning("No tiener archivos compartidos ", "Alerta");
             }
         }
 

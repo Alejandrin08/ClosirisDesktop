@@ -17,7 +17,7 @@ namespace ClosirisDesktop.Model.Validations {
                     result = new ValidationResult(false, "El campo no puede estar vacío");
                     SetErrorText("El campo no puede estar vacío");
                 } else {
-                    Regex regex = new Regex(@"^[\w\-]+$", RegexOptions.None, TimeSpan.FromSeconds(TIMEOUT));
+                    Regex regex = new Regex(@"^(?!Compartidos\b)[\w\-]+$", RegexOptions.None, TimeSpan.FromSeconds(TIMEOUT));
                     if (!regex.IsMatch(value.ToString())) {
                         result = new ValidationResult(false, "Nombre del folder no valido. Solo se aceptan guiones como carecteres especiales");
                         SetErrorText("Nombre del folder no valido. Solo se aceptan guiones como carecteres especiales");
