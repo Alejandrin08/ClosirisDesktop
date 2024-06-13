@@ -22,15 +22,15 @@ namespace ClosirisDesktop.Views.Pages {
     /// Lógica de interacción para ConsultUsers.xaml
     /// </summary>
     public partial class ConsultUsers : Page {
-        private ObservableCollection<UserModel>  listUsers;
+        private ObservableCollection<UserModel> listUsers = new ObservableCollection<UserModel>(); 
         private List<UserModel> users;
         public ConsultUsers() {
             InitializeComponent();
-            InitializeListOfUsers();
+            _ = InitializeListOfUsers();
         }
 
-        private async void InitializeListOfUsers() {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        private async Task InitializeListOfUsers() {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             users = await managerUsersREST.GetListUsers(Singleton.Instance.Token);
             if (users != null &&  users.Count > 0) {
                 dgUsers.ItemsSource = users;
@@ -44,7 +44,7 @@ namespace ClosirisDesktop.Views.Pages {
             if (string.IsNullOrWhiteSpace(searchTerm)) {
                 dgUsers.ItemsSource = listUsers;
             } else {
-                var filteredList = listUsers.Where(item => item.Name.ToLower().Contains(searchTerm)).ToList();
+                var filteredList = listUsers.Where(item => item.Name != null && item.Name.ToLower().Contains(searchTerm)).ToList();
                 dgUsers.ItemsSource = filteredList;
             }
         }

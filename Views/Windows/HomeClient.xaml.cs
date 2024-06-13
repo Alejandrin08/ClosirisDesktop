@@ -28,16 +28,16 @@ namespace ClosirisDesktop.Views.Windows {
         public static HomeClient HomeClientInstance { get; set; }
         public HomeClient() {
             InitializeComponent();
-            LoadImageProfile();
-            LoadFreeStorage();
-            UpdateUserPlan();
+            _ = LoadImageProfile();
+            _ = LoadFreeStorage();
+            _ = UpdateUserPlan();
             Loaded += LoadedFolders;
             HomeClientInstance = this;
         }
 
-        private async void LoadImageProfile() {
+        private async Task LoadImageProfile() {
             try {
-                ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+                ManagerUsersRest managerUsersREST = new ManagerUsersRest();
                 UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
                 BitmapImage bitmap = new BitmapImage();
 
@@ -49,7 +49,7 @@ namespace ClosirisDesktop.Views.Windows {
 
                 if (string.IsNullOrEmpty(userModel.ImageProfile)) {
                     bitmap.BeginInit();
-                    bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
+                    bitmap.UriSource = new Uri("pack://application:,,,/ClosirisDesktop;component/Resources/Images/UserIcon.png");
                     bitmap.EndInit();
                 } else {
                     byte[] imageBytes = Convert.FromBase64String(userModel.ImageProfile);
@@ -68,8 +68,8 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        private async void UpdateUserPlan() {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        private async Task UpdateUserPlan() {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
 
             if (userModel == null) {
@@ -83,8 +83,8 @@ namespace ClosirisDesktop.Views.Windows {
             }
         }
 
-        public async void LoadFreeStorage() {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+        public async Task LoadFreeStorage() {
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
 
             int totalStorage = 0;
@@ -186,7 +186,7 @@ namespace ClosirisDesktop.Views.Windows {
         }
 
         private async void LoadedFolders(object sender, RoutedEventArgs e) {
-            ManagerFilesREST managerFilesREST = new ManagerFilesREST();
+            ManagerFilesRest managerFilesREST = new ManagerFilesRest();
             List<string> folders = await managerFilesREST.GetUserFolders(Singleton.Instance.Token);
 
             if (folders != null) {

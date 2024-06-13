@@ -23,17 +23,17 @@ namespace ClosirisDesktop.Views.Pages {
     /// Lógica de interacción para ConsultAudit.xaml
     /// </summary>
     public partial class ConsultAudit : Page {
-        private ObservableCollection<LogBookModel> listAudit;
+        private ObservableCollection<LogBookModel> listAudit = new ObservableCollection<LogBookModel>();
         private List<LogBookModel> audit;
 
         public ConsultAudit() {
             InitializeComponent();
-            InitializeListOfAudit();
+            _ = InitializeListOfAudit();
         }
         
 
-        private async void InitializeListOfAudit() {
-            ManagerAuthREST managerAuthREST = new ManagerAuthREST();
+        private async Task InitializeListOfAudit() {
+            ManagerAuthRest managerAuthREST = new ManagerAuthRest();
             audit = await managerAuthREST.GetListAudit(Singleton.Instance.Token);
             if(audit != null && audit.Count > 0) {
                 dgAudit.ItemsSource = audit;
@@ -49,7 +49,7 @@ namespace ClosirisDesktop.Views.Pages {
                 if (selectedAction == "Todas las acciones") {
                     dgAudit.ItemsSource = listAudit;
                 } else {
-                    var filteredList = listAudit.Where(item => item.Action.Equals(selectedAction, StringComparison.OrdinalIgnoreCase)).ToList();
+                    var filteredList = listAudit.Where(item => item.Action != null && item.Action.Equals(selectedAction, StringComparison.OrdinalIgnoreCase)).ToList();
                     dgAudit.ItemsSource = filteredList;
                 }
             }

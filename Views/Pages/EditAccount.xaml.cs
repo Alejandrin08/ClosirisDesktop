@@ -27,12 +27,12 @@ namespace ClosirisDesktop.Views.Pages {
             NameValidationRule.ErrorTextBlock = txbErrorName;
             EmailValidationRule.ErrorTextBlock = txbErrorEmail;
 
-            LoadUserInfo();
+            _ = LoadUserInfo();
         }
 
-        private async void LoadUserInfo() {
+        private async Task LoadUserInfo() {
             try {
-                var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+                var userModel = await new ManagerUsersRest().GetUserInfo(Singleton.Instance.Token);
                 BitmapImage bitmap = new BitmapImage();
 
                 if (userModel != null) {
@@ -51,8 +51,8 @@ namespace ClosirisDesktop.Views.Pages {
                             bitmap.EndInit();
                         }
                     } else {
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri("pack://application:,,,/Resources/Images/UserIcon.png");
+                        bitmap.BeginInit(); 
+                        bitmap.UriSource = new Uri("pack://application:,,,/ClosirisDesktop;component/Resources/Images/UserIcon.png");
                         bitmap.EndInit();
                     }
                 }
@@ -132,7 +132,7 @@ namespace ClosirisDesktop.Views.Pages {
                 }
             }
 
-            int result = await new ManagerUsersREST().UpdateUserAccount(userModel);
+            int result = await new ManagerUsersRest().UpdateUserAccount(userModel);
 
             if (result > 0) {
                 HomeClient homeClient = new HomeClient();
@@ -157,14 +157,14 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private async Task<bool> IsEmailDuplicate(string email) {
-            ManagerUsersREST managerUsersREST = new ManagerUsersREST();
+            ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             return await managerUsersREST.ValidateEmailDuplicate(email);
         }
 
         private async Task<string> GetPreviousImageProfile() {
             string result = null;
             try {
-                var userModel = await new ManagerUsersREST().GetUserInfo(Singleton.Instance.Token);
+                var userModel = await new ManagerUsersRest().GetUserInfo(Singleton.Instance.Token);
                 result = userModel?.ImageProfile;
             } catch (Exception ex) {
                 App.ShowMessageError("Error al obtener imagen", "Error");

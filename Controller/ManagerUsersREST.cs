@@ -14,13 +14,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ClosirisDesktop.Controller {
-    public class ManagerUsersREST : IManagerUsers {
+    public class ManagerUsersRest : IManagerUsers {
 
         private static readonly HttpClient client = new HttpClient();
 
         private readonly string baseUrl;
 
-        public ManagerUsersREST() {
+        public ManagerUsersRest() {
             baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
         }
 
@@ -128,9 +128,13 @@ namespace ClosirisDesktop.Controller {
         }
 
         public async Task< UserModel> GetUserInfoByEmail(string email) {
-
             try {
                 var resultRequest = await client.GetAsync($"{baseUrl}/api/Info/{email}");
+                if (resultRequest.StatusCode == System.Net.HttpStatusCode.Unauthorized || resultRequest.StatusCode == System.Net.HttpStatusCode.BadRequest || 
+                    resultRequest.StatusCode == System.Net.HttpStatusCode.NotFound) {
+                    App.ShowMessageWarning("Usuario no encontrado", "No se encontró un usuario con el correo ingresado");
+                    return null;
+                }
                 resultRequest.EnsureSuccessStatusCode();
 
                 var content = resultRequest.Content.ReadAsStringAsync().Result;

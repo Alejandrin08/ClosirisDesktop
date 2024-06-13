@@ -12,13 +12,13 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace ClosirisDesktop.Controller {
-    public class ManagerAuthREST : IManagerAuth {
+    public class ManagerAuthRest : IManagerAuth {
         
         private static readonly HttpClient client = new HttpClient();
 
         private readonly string baseUrl;
 
-        public ManagerAuthREST() {
+        public ManagerAuthRest() {
             baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
         }
 
