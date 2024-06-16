@@ -40,7 +40,7 @@ namespace ClosirisDesktop.Controller {
                 return 1;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -60,7 +60,7 @@ namespace ClosirisDesktop.Controller {
                 return 1;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -81,7 +81,7 @@ namespace ClosirisDesktop.Controller {
                 return 1;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -105,7 +105,7 @@ namespace ClosirisDesktop.Controller {
                 return response?.FileBase64 ?? string.Empty;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return null;
             }
         }
@@ -138,7 +138,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<FileModel>();
             }
         }
@@ -165,7 +165,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<UserModel>();
             }
         }
@@ -190,7 +190,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<UserModel>();
             }
         }
@@ -224,7 +224,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<FileModel>();
             }
         }
@@ -253,7 +253,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return null;
             }
         }
@@ -276,7 +276,7 @@ namespace ClosirisDesktop.Controller {
                 return response != null ? 1 : 0;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -306,7 +306,7 @@ namespace ClosirisDesktop.Controller {
                 return response != null ? 1 : 0;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -348,11 +348,11 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             } catch (IOException e) {
                 LoggerManager.Instance.LogFatal($"IO error: {e.Message}", e);
-                App.ShowMessageError("Error de archivo", "No se pudo acceder al archivo. Asegúrese de que no esté siendo utilizado por otra aplicación.");
+                App.ShowMessageError("No se pudo acceder al archivo. Asegúrese de que no esté siendo utilizado por otra aplicación.", "Error de archivo");
                 return -1;
             }
         }

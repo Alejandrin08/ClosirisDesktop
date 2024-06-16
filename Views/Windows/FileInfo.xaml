@@ -60,17 +60,16 @@
                            Source="/Resources/Images/PdfFile.png" 
                            Width="50" 
                            Height="50"
-                           Margin="40,0,0,0"/>
+                           Margin="25,0,0,0"/>
 
                     <TextBlock x:Name="txbFileName"
                                Text="Proyecto.pdf" 
                                FontSize="20" 
                                TextWrapping="Wrap"
                                FontFamily="Times New Roman" 
-                               HorizontalAlignment="Left" 
                                VerticalAlignment="Center"
                                Foreground="White"
-                               Margin="20,0"/>
+                               Margin="10,0" Width="181" Height="45"/>
                 </StackPanel>
 
                 <TextBlock Text="Detalles del archivo"
@@ -167,7 +166,7 @@
                                TextWrapping="Wrap"
                                Grid.Column="1"/>
 
-                    
+
 
                     <TextBlock x:Name="txbUserShare"
                                FontSize="8"

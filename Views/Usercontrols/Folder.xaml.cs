@@ -51,12 +51,14 @@ namespace ClosirisDesktop.Views.Usercontrols {
                                     "Imágenes PNG (*.png)|*.png|" +
                                     "Imágenes GIF (*.gif)|*.gif";
 
+
+
             if (openFileDialog.ShowDialog() == true) {
                 string filePath = openFileDialog.FileName;
 
                 var fileInfo = new System.IO.FileInfo(filePath);
                 if (fileInfo.Length > MAX_FILE_SIZE) {
-                    App.ShowMessageError("Archivo demasiado grande", "El archivo excede el tamaño máximo permitido de 4 MB");
+                    App.ShowMessageError("El archivo excede el tamaño máximo permitido de 4 MB", "Archivo demasiado grande");
                     return;
                 }
 
@@ -77,7 +79,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
             int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
             decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
             if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
-                App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                App.ShowMessageInformation("El archivo se ha subido correctamente", "Archivo subido");
                 _ = UpdateFreeStorage(fileInfo.Length);
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 var homeClient = HomeClient.HomeClientInstance;
@@ -87,7 +89,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
                     await homeClient.LoadFreeStorage();
                 }
             } else {
-                App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
+                App.ShowMessageError("No se pudo subir el archivo", "Error al subir archivo");
             }
             CloseAndReloadParentWindow();
         }
@@ -97,7 +99,7 @@ namespace ClosirisDesktop.Views.Usercontrols {
             decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
             if (freeStorage <= 0) {
-                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
+                App.ShowMessageError("No se pudo actualizar el almacenamiento", "Error al actualizar el almacenamiento");
             }
         }
 

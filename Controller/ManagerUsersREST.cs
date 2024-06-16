@@ -40,7 +40,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -62,7 +62,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -83,7 +83,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -104,7 +104,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return false;
             }
         }
@@ -122,7 +122,7 @@ namespace ClosirisDesktop.Controller {
                 return responseObject;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return null;
             }
         }
@@ -132,7 +132,7 @@ namespace ClosirisDesktop.Controller {
                 var resultRequest = await client.GetAsync($"{baseUrl}/api/info/{email}");
                 if (resultRequest.StatusCode == System.Net.HttpStatusCode.Unauthorized || resultRequest.StatusCode == System.Net.HttpStatusCode.BadRequest ||
                     resultRequest.StatusCode == System.Net.HttpStatusCode.NotFound) {
-                    App.ShowMessageWarning("Usuario no encontrado", "No se encontró un usuario con el correo ingresado");
+                    App.ShowMessageWarning("No se encontró un usuario con el correo ingresado", "Usuario no encontrado");
                     return null;
                 }
                 resultRequest.EnsureSuccessStatusCode();
@@ -143,7 +143,7 @@ namespace ClosirisDesktop.Controller {
                 return responseObject;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return null;
             }
         }
@@ -169,7 +169,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -190,7 +190,7 @@ namespace ClosirisDesktop.Controller {
                 return freeStorage;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -212,7 +212,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return -1;
             }
         }
@@ -233,7 +233,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<UserModel>();
             }
         }

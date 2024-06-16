@@ -53,7 +53,7 @@ namespace ClosirisDesktop.Views.Pages {
                 btnPassword.Visibility = Visibility.Visible;
                 psbUserPassword.Visibility = Visibility.Visible;
             } else {
-               App.ShowMessageError("Token inválido", "El token ingresado no es válido");
+               App.ShowMessageError("El token ingresado no es válido", "Token inválido");
             }
         }
 
@@ -63,7 +63,7 @@ namespace ClosirisDesktop.Views.Pages {
             userModel.Password = psbUserPassword.Password;
             ManagerUsersRest managerUsersREST = new ManagerUsersRest();
             if (await managerUsersREST.ChangePassword(userModel) > 0) {
-                App.ShowMessageInformation("Contraseña actualizada", "La contraseña ha sido actualizada con éxito");
+                App.ShowMessageInformation("La contraseña ha sido actualizada con éxito", "Contraseña actualizada");
                 Login login = new Login();
                 this.NavigationService.Navigate(login);
             }

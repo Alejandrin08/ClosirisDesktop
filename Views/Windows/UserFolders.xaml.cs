@@ -19,7 +19,7 @@ namespace ClosirisDesktop.Views.Windows {
     /// Lógica de interacción para UserFolders.xaml
     /// </summary>
     public partial class UserFolders : Window {
-        private List<string> _folders;
+        private List<string> _folders;  
         private const int MAX_ROWS = 3;
         private const int MAX_COLUMNS = 2;
         public UserFolders() {
@@ -58,25 +58,25 @@ namespace ClosirisDesktop.Views.Windows {
             textBox.TextChanged += TextChangedValidateFolderName;
         }
 
-        private void ClickCreateFolder(object sender, RoutedEventArgs e) {
+        private  void ClickCreateFolder(object sender, RoutedEventArgs e) {
             const long MAX_FILE_SIZE = 4 * 1024 * 1024;
-
+          
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            openFileDialog.Filter = "Documentos PDF (.pdf)|.pdf|" +
-                                    "Documentos Word (.docx)|.docx|" +
-                                    "Archivos de Texto (.txt)|.txt|" +
-                                    "Archivos CSV (.csv)|.csv|" +
-                                    "Archivos de Audio (.mp3)|.mp3|" +
-                                    "Archivos de Video (.mp4)|.mp4|" +
-                                    "Imágenes JPEG (.jpeg;.jpg)|.jpeg;.jpg|" +
-                                    "Imágenes PNG (.png)|.png|" +
-                                    "Imágenes GIF (.gif)|.gif";
+            openFileDialog.Filter = "Documentos PDF (*.pdf)|*.pdf|" +
+                                    "Documentos Word (*.docx)|*.docx|" +
+                                    "Archivos de Texto (*.txt)|*.txt|" +
+                                    "Archivos CSV (*.csv)|*.csv|" +
+                                    "Archivos de Audio (*.mp3)|*.mp3|" +
+                                    "Archivos de Video (*.mp4)|*.mp4|" +
+                                    "Imágenes JPEG (*.jpeg;*.jpg)|*.jpeg;*.jpg|" +
+                                    "Imágenes PNG (*.png)|*.png|" +
+                                    "Imágenes GIF (*.gif)|*.gif";
 
             if (openFileDialog.ShowDialog() == true) {
                 System.IO.FileInfo fileInfo = new System.IO.FileInfo(openFileDialog.FileName);
                 if (fileInfo.Length > MAX_FILE_SIZE) {
-                    App.ShowMessageError("Archivo demasiado grande", "El archivo excede el tamaño máximo permitido de 4 MB");
+                    App.ShowMessageError("El archivo excede el tamaño máximo permitido de 4 MB", "Archivo demasiado grande");
                     return;
                 }
 
@@ -93,7 +93,7 @@ namespace ClosirisDesktop.Views.Windows {
                     FilePath = openFileDialog.FileName,
                     FolderName = folderName
                 };
-                _ = UploadFile(fileModel, fileInfo);
+                _ = UploadFile(fileModel, fileInfo);                
             }
         }
 
@@ -104,7 +104,7 @@ namespace ClosirisDesktop.Views.Windows {
             int resultInsertFileOwner = await managerFilesREST.InsertFileOwner(fileModel.Id, Singleton.Instance.Token);
             decimal totalStorage = Singleton.Instance.TotalStorage - fileInfo.Length;
             if (resultUploadFile >= 1 && resultInsertFileOwner >= 1 && totalStorage > 0 && !await ValidateExistingFile(fileModel.FileName)) {
-                App.ShowMessageInformation("Archivo subido", "El archivo se ha subido correctamente");
+                App.ShowMessageInformation("El archivo se ha subido correctamente", "Archivo subido");
                 _ = UpdateFreeStorage(fileInfo.Length);
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 var homeClient = HomeClient.HomeClientInstance;
@@ -114,7 +114,7 @@ namespace ClosirisDesktop.Views.Windows {
                     await homeClient.LoadFreeStorage();
                 }
             } else {
-                App.ShowMessageError("Error al subir archivo", "No se pudo subir el archivo");
+                App.ShowMessageError("No se pudo subir el archivo", "Error al subir archivo");
             }
             CloseAndReloadParentWindow();
         }
@@ -124,7 +124,7 @@ namespace ClosirisDesktop.Views.Windows {
             decimal totalStorage = Singleton.Instance.TotalStorage - storageToUpdate;
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
             if (freeStorage <= 0) {
-                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
+                App.ShowMessageError("No se pudo actualizar el almacenamiento", "Error al actualizar el almacenamiento");
             }
         }
 
@@ -138,7 +138,7 @@ namespace ClosirisDesktop.Views.Windows {
             foreach (var file in files) {
                 if (file.FileName == fileName) {
                     isFileExisting = true;
-                    break;
+                    break; 
                 }
             }
             return isFileExisting;
@@ -167,7 +167,7 @@ namespace ClosirisDesktop.Views.Windows {
             tbkErrorFolderNameWithFiles.Visibility = isFolderNameValidWithFiles ? Visibility.Collapsed : Visibility.Visible;
 
             bool areAllInputsValid = (!Validation.GetHasError(txtFolderName) && txtFolderName.Visibility == Visibility.Visible) &&
-                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible);
+                                     (!Validation.GetHasError(txtWithFolder) && txtWithFolder.Visibility == Visibility.Visible) ;
 
             btnCreateFolder.IsEnabled = areAllInputsValid;
             btnWithFolders.IsEnabled = areAllInputsValid && !ValidateDuplicityFolderName();
@@ -175,7 +175,7 @@ namespace ClosirisDesktop.Views.Windows {
 
         private bool ValidateDuplicityFolderName() {
             bool isFolderNameValidWithFiles = false;
-            if (_folders != null && _folders.Count > 0) {
+            if (_folders != null &&  _folders.Count > 0) {
                 foreach (var folderName in _folders) {
                     if (folderName == txtWithFolder.Text) {
                         isFolderNameValidWithFiles = true;
@@ -201,11 +201,11 @@ namespace ClosirisDesktop.Views.Windows {
 
                     userFolder.BindData();
                     userFolder.Margin = new Thickness(8);
-                    if (folderName != "Compartidos") {
+                    if(folderName!= "Compartidos") {
                         wrpFolders.Children.Add(userFolder);
                         count++;
                     }
-
+                    
                 }
 
                 grdWithFolders.Children.Add(wrapPanel);

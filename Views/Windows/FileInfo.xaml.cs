@@ -90,7 +90,7 @@ namespace ClosirisDesktop.Views.Windows {
             if (!string.IsNullOrEmpty(dataFile)) {
                 SaveFile(dataFile);
             } else {
-                App.ShowMessageError("Error", "No se pudo obtener el archivo.");
+                App.ShowMessageError("No se pudo obtener el archivo.", "Error");
             }
         }
 
@@ -108,10 +108,10 @@ namespace ClosirisDesktop.Views.Windows {
                 try {
                     byte[] fileBytes = Convert.FromBase64String(dataFile);
                     File.WriteAllBytes(saveFileDialog.FileName, fileBytes);
-                    App.ShowMessageInformation("Archivo guardado", "El archivo se ha guardado correctamente.");
+                    App.ShowMessageInformation("El archivo se ha guardado correctamente.", "Archivo guardado");
                 } catch (Exception ex) {
                     LoggerManager.Instance.LogFatal($"Error al guardar el archivo: {ex.Message}", ex);
-                    App.ShowMessageError("Error al guardar el archivo", "Hubo un error al guardar el archivo. Por favor, inténtelo de nuevo.");
+                    App.ShowMessageError("Hubo un error al guardar el archivo. Por favor, inténtelo de nuevo.", "Error al guardar el archivo");
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace ClosirisDesktop.Views.Windows {
                         break;
                 }
             } else {
-                App.ShowMessageError("Error", "No se pudo obtener el archivo.");
+                App.ShowMessageError("No se pudo obtener el archivo.", "Error");
             }
         }
 
@@ -205,14 +205,14 @@ namespace ClosirisDesktop.Views.Windows {
             ManagerFilesRest managerFilesREST = new ManagerFilesRest();
             int resultDeleteFileShare = await managerFilesREST.DeleteFileShare(FileModel.Id, Singleton.Instance.Token);
             if (resultDeleteFileShare > 0) {
-                App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
+                App.ShowMessageInformation("El archivo se ha eliminado correctamente.", "Archivo eliminado");
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 if (userFilesPage != null && Singleton.Instance.SelectedFolder != null) {
                     userFilesPage.ShowUserFiles(Singleton.Instance.SelectedFolder);
                 }
                 CloseAndReloadParentWindow();
             } else {
-                App.ShowMessageError("Error al eliminar", "Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.");
+                App.ShowMessageError("Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.", "Error al eliminar");
             }
         }
 
@@ -224,7 +224,7 @@ namespace ClosirisDesktop.Views.Windows {
             long storageToUpdate = (long)(fileSize * 1024);
             if (resultDeleteFromServer >= 1 && resultDeleteRegistration >= 1) {
                 _ = UpdateFreeStorage(storageToUpdate);
-                App.ShowMessageInformation("Archivo eliminado", "El archivo se ha eliminado correctamente.");
+                App.ShowMessageInformation("El archivo se ha eliminado correctamente.", "Archivo eliminado");
                 var userFilesPage = UserFiles.UserFilesPageInstance;
                 var homeClient = HomeClient.HomeClientInstance;
                 if (userFilesPage != null && Singleton.Instance.SelectedFolder != null && homeClient != null) {
@@ -233,7 +233,7 @@ namespace ClosirisDesktop.Views.Windows {
                 }
                 CloseAndReloadParentWindow();
             } else {
-                App.ShowMessageError("Error al eliminar", "Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.");
+                App.ShowMessageError("Hubo un error al eliminar el archivo. Por favor, inténtelo de nuevo.", "Error al eliminar");
             }
         }
 
@@ -243,7 +243,7 @@ namespace ClosirisDesktop.Views.Windows {
             var freeStorage = await managerUsersREST.UpdateFreeStorage(Singleton.Instance.Token, totalStorage);
 
             if (freeStorage <= 0) {
-                App.ShowMessageError("Error al actualizar el almacenamiento", "No se pudo actualizar el almacenamiento");
+                App.ShowMessageError("No se pudo actualizar el almacenamiento", "Error al actualizar el almacenamiento");
             }
         }
 

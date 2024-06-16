@@ -59,10 +59,10 @@ namespace ClosirisDesktop.Views.Pages {
                 imgbUserProfile.ImageSource = bitmap;
             } catch (InvalidOperationException ex) {
                 LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
             } catch (NullReferenceException ex) {
                 LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
             }
         }
 
@@ -143,7 +143,7 @@ namespace ClosirisDesktop.Views.Pages {
                     parentWindow.Close();
                 }
             } else {
-                App.ShowMessageError("Error al actualizar", "No se pudo actualizar la información de la cuenta");
+                App.ShowMessageError("No se pudo actualizar la información de la cuenta", "Error al actualizar");
             }
         }
 

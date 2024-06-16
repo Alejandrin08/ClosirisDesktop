@@ -65,6 +65,8 @@ namespace ClosirisDesktop.Views.Windows {
                         string name = userModel.Name;
                         txbShare.Text = " ¿Deseas compartir con " + name + " ?";
                         txbShare.Visibility = Visibility.Visible;
+                    } else {
+                        Close();
                     }
                 }
             }

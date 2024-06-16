@@ -43,7 +43,7 @@ namespace ClosirisDesktop.Views.Windows {
 
                 if (userModel == null) {
                     LoggerManager.Instance.LogError("UserModel es null.");
-                    App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                    App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
                     return;
                 }
 
@@ -64,7 +64,7 @@ namespace ClosirisDesktop.Views.Windows {
                 imgbUserImage.ImageSource = bitmap;
             } catch (InvalidOperationException ex) {
                 LoggerManager.Instance.LogError("Error al cargar información de usuario: ", ex);
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
             }
         }
 
@@ -74,7 +74,7 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (userModel == null) {
                 LoggerManager.Instance.LogError("UserModel es null.");
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
                 return;
             }
             if (userModel.Plan == "Básico") {
@@ -91,7 +91,7 @@ namespace ClosirisDesktop.Views.Windows {
 
             if (userModel == null) {
                 LoggerManager.Instance.LogError("UserModel es null.");
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
                 return;
             }
 

@@ -36,7 +36,7 @@ namespace ClosirisDesktop.Views.Pages {
             UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
             if (userModel == null) {
                 LoggerManager.Instance.LogError("UserModel es null.");
-                App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
+                App.ShowMessageError("No se pudo cargar la información del usuario", "Error al cargar información");
                 return;
             }
             long differenceStorage = (long)(52428800 - userModel.FreeStorage);

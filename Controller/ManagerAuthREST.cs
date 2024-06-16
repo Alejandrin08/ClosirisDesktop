@@ -43,7 +43,7 @@ namespace ClosirisDesktop.Controller {
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
 
                 return false;
             }
@@ -65,7 +65,7 @@ namespace ClosirisDesktop.Controller {
                 return infoFiles;
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
+                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
                 return new List<LogBookModel>();
             }
         }
