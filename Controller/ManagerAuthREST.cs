@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace ClosirisDesktop.Controller {
     public class ManagerAuthRest : IManagerAuth {
-        
+
         private static readonly HttpClient client = new HttpClient();
 
         private readonly string baseUrl;
@@ -44,9 +44,9 @@ namespace ClosirisDesktop.Controller {
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
                 App.ShowMessageError("Error de conexión", "No se pudo establecer conexión con el servidor");
-         
+
                 return false;
-            } 
+            }
         }
 
         public async Task<List<LogBookModel>> GetListAudit(string token) {
@@ -54,7 +54,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync($"{baseUrl}/api/Audit");
+                var result = await client.GetAsync($"{baseUrl}/api/audit");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();

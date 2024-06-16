@@ -33,7 +33,7 @@ namespace ClosirisDesktop.Views.Pages {
 
         private async void ClickGetPlanPremium(object sender, RoutedEventArgs e) {
             ManagerUsersRest managerUsersREST = new ManagerUsersRest();
-            UserModel userModel =  await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
+            UserModel userModel = await managerUsersREST.GetUserInfo(Singleton.Instance.Token);
             if (userModel == null) {
                 LoggerManager.Instance.LogError("UserModel es null.");
                 App.ShowMessageError("Error al cargar información", "No se pudo cargar la información del usuario");
@@ -55,9 +55,9 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void ReturnHomeClient() {
-            HomeClient homeClient = new HomeClient();
-            homeClient.fraPages.Navigate(new UserFiles());
-            homeClient.Show();
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.fraPages.Navigate(new Login());
+            mainWindow.Show();
 
             Window window = Window.GetWindow(this);
             if (window != null) {

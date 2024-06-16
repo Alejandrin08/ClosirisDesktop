@@ -58,7 +58,7 @@ namespace ClosirisDesktop.Controller {
                     return 1;
                 } else {
                     return 0;
-                    
+
                 }
             } catch (HttpRequestException e) {
                 LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
@@ -69,7 +69,7 @@ namespace ClosirisDesktop.Controller {
 
         public async Task<int> ChangePassword(UserModel userModel) {
             try {
-                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Password", userModel);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/password", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -90,7 +90,7 @@ namespace ClosirisDesktop.Controller {
 
         public async Task<bool> ValidateEmailDuplicate(string email) {
             try {
-                var result = await client.GetAsync($"{baseUrl}/api/EmailDuplicity/{email}");
+                var result = await client.GetAsync($"{baseUrl}/api/emailDuplicity/{email}");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -113,7 +113,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync($"{baseUrl}/api/UserInfo");
+                var result = await client.GetAsync($"{baseUrl}/api/userInfo");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -127,10 +127,10 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public async Task< UserModel> GetUserInfoByEmail(string email) {
+        public async Task<UserModel> GetUserInfoByEmail(string email) {
             try {
-                var resultRequest = await client.GetAsync($"{baseUrl}/api/Info/{email}");
-                if (resultRequest.StatusCode == System.Net.HttpStatusCode.Unauthorized || resultRequest.StatusCode == System.Net.HttpStatusCode.BadRequest || 
+                var resultRequest = await client.GetAsync($"{baseUrl}/api/info/{email}");
+                if (resultRequest.StatusCode == System.Net.HttpStatusCode.Unauthorized || resultRequest.StatusCode == System.Net.HttpStatusCode.BadRequest ||
                     resultRequest.StatusCode == System.Net.HttpStatusCode.NotFound) {
                     App.ShowMessageWarning("Usuario no encontrado", "No se encontró un usuario con el correo ingresado");
                     return null;
@@ -156,7 +156,7 @@ namespace ClosirisDesktop.Controller {
 
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userModel.Token);
 
-                var result = await client.PutAsJsonAsync($"{baseUrl}/api/UserAccount", userModel);
+                var result = await client.PutAsJsonAsync($"{baseUrl}/api/userAccount", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -181,7 +181,7 @@ namespace ClosirisDesktop.Controller {
                     freeStorage = storage
                 };
 
-                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/FreeStorage", data);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/freeStorage", data);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -199,7 +199,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/Plan", userModel);
+                var result = await client.PatchAsJsonAsync($"{baseUrl}/api/plan", userModel);
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -222,7 +222,7 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync($"{baseUrl}/api/Users");
+                var result = await client.GetAsync($"{baseUrl}/api/users");
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();

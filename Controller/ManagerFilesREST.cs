@@ -31,7 +31,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync($"{baseUrl}/api/ServerFile");
+                var result = await client.DeleteAsync($"{baseUrl}/api/serverFile");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return -1;
+                }
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -48,7 +51,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync($"{baseUrl}/api/File");
+                var result = await client.DeleteAsync($"{baseUrl}/api/file");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return -1;
+                }
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -66,7 +72,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.DeleteAsync($"{baseUrl}/api/FileShared");
+                var result = await client.DeleteAsync($"{baseUrl}/api/fileShared");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return -1;
+                }
                 result.EnsureSuccessStatusCode();
 
                 return 1;
@@ -83,7 +92,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
-                var result = await client.GetAsync($"{baseUrl}/api/File");
+                var result = await client.GetAsync($"{baseUrl}/api/file");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return null;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -105,7 +117,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("folder_name");
                 client.DefaultRequestHeaders.Add("folder_name", folderName);
 
-                var result = await client.GetAsync($"{baseUrl}/api/FileInfo");
+                var result = await client.GetAsync($"{baseUrl}/api/fileInfo");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return null;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -135,7 +150,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile);
 
-                var result = await client.GetAsync($"{baseUrl}/api/UsersShare");
+                var result = await client.GetAsync($"{baseUrl}/api/usersShare");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return null;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -159,7 +177,10 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Remove("file_id");
                 client.DefaultRequestHeaders.Add("file_id", idFile);
 
-                var result = await client.GetAsync($"{baseUrl}/api/UsersOwner");
+                var result = await client.GetAsync($"{baseUrl}/api/usersOwner");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return null;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -173,15 +194,15 @@ namespace ClosirisDesktop.Controller {
                 return new List<UserModel>();
             }
         }
-      
-        public async Task<List<FileModel>> GetInfoFilesShare( string token) {
+
+        public async Task<List<FileModel>> GetInfoFilesShare(string token) {
             List<FileModel> infoFiles = new List<FileModel>();
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync($"{baseUrl}/api/FileShared");
+                var result = await client.GetAsync($"{baseUrl}/api/fileShared");
 
-                if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest || 
+                if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized || result.StatusCode == System.Net.HttpStatusCode.BadRequest ||
                     result.StatusCode == System.Net.HttpStatusCode.NotFound) {
                     return null;
                 }
@@ -213,7 +234,10 @@ namespace ClosirisDesktop.Controller {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync($"{baseUrl}/api/Folders");
+                var result = await client.GetAsync($"{baseUrl}/api/folders");
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return null;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -241,6 +265,9 @@ namespace ClosirisDesktop.Controller {
                 client.DefaultRequestHeaders.Add("file_id", idFile.ToString());
 
                 var result = await client.PostAsync($"{baseUrl}/api/fileowner", null);
+                if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                    return -1;
+                }
                 result.EnsureSuccessStatusCode();
 
                 var responseContent = await result.Content.ReadAsStringAsync();
@@ -254,7 +281,7 @@ namespace ClosirisDesktop.Controller {
             }
         }
 
-        public async  Task<int> InsertFileShared(int idUserShared, int idFile, string token) {
+        public async Task<int> InsertFileShared(int idUserShared, int idFile, string token) {
             try {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Remove("file_id");
@@ -264,8 +291,9 @@ namespace ClosirisDesktop.Controller {
 
                 var result = await client.PostAsync($"{baseUrl}/api/fileShared", null);
 
-                if (result.StatusCode == HttpStatusCode.Conflict) {
-                    return 0; 
+                if (result.StatusCode == HttpStatusCode.Conflict || result.StatusCode == HttpStatusCode.BadGateway ||
+                    result.StatusCode == HttpStatusCode.InternalServerError) {
+                    return 0;
                 }
 
                 result.EnsureSuccessStatusCode();
@@ -273,7 +301,7 @@ namespace ClosirisDesktop.Controller {
                 var responseContent = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FileModel>(responseContent);
 
-                
+
 
                 return response != null ? 1 : 0;
             } catch (HttpRequestException e) {
@@ -303,6 +331,9 @@ namespace ClosirisDesktop.Controller {
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     var result = await client.PostAsync($"{baseUrl}/api/file", content);
+                    if (result.StatusCode == HttpStatusCode.InternalServerError || result.StatusCode == HttpStatusCode.BadRequest) {
+                        return -1;
+                    }
 
                     result.EnsureSuccessStatusCode();
 
