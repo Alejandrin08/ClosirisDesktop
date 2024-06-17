@@ -28,7 +28,14 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private void MouseDownBack(object sender, MouseButtonEventArgs e) {
-            ReturnHomeClient();
+            HomeClient homeClient = new HomeClient();
+            homeClient.fraPages.Navigate(new UserFiles());
+            homeClient.Show();
+
+            Window window = Window.GetWindow(this);
+            if (window != null) {
+                window.Close();
+            }
         }
 
         private async void ClickGetPlanPremium(object sender, RoutedEventArgs e) {

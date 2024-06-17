@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,21 +37,27 @@ namespace ClosirisDesktop.Views.Pages {
         }
 
         private async void ClickUserPlan(object sender, RoutedEventArgs e) {
-            bool isEmailDuplicate = await IsEmailDuplicate(txtEmail.Text);
-            if (isEmailDuplicate) {
-                txbErrorEmail.Visibility = Visibility.Visible;
-                txbErrorEmail.Text = "El correo ya se encuentra registrado";
+            try {
+                bool isEmailDuplicate = await IsEmailDuplicate(txtEmail.Text);
+                if (isEmailDuplicate) {
+                    txbErrorEmail.Visibility = Visibility.Visible;
+                    txbErrorEmail.Text = "El correo ya se encuentra registrado";
+                    btnRegister.IsEnabled = false;
+                    ErrorEmailDuplicate(txtEmail, "El correo ya se encuentra registrado");
+                } else {
+                    string password = psbUserPassword.Password;
+                    UserPlan userPlan = new UserPlan();
+                    this.NavigationService.Navigate(userPlan);
+                    Singleton.Instance.Email = txtEmail.Text;
+                    Singleton.Instance.Password = password;
+                    Singleton.Instance.Name = txtUserName.Text;
+                }
+            } catch (HttpRequestException) {
+                App.ShowMessageError("Error al conectarse con el servidor", "Error de conexión");
                 btnRegister.IsEnabled = false;
-                ErrorEmailDuplicate(txtEmail, "El correo ya se encuentra registrado");
-            } else {
-                string password = psbUserPassword.Password;
-                UserPlan userPlan = new UserPlan();
-                this.NavigationService.Navigate(userPlan);
-                Singleton.Instance.Email = txtEmail.Text;
-                Singleton.Instance.Password = password;
-                Singleton.Instance.Name = txtUserName.Text;
-            }
+            } 
         }
+
 
         private void ErrorEmailDuplicate(TextBox textBox, string errorMessage) {
             var bindingExpression = textBox.GetBindingExpression(TextBox.TextProperty);

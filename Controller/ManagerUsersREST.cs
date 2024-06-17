@@ -102,10 +102,8 @@ namespace ClosirisDesktop.Controller {
                 } else {
                     return false;
                 }
-            } catch (HttpRequestException e) {
-                LoggerManager.Instance.LogFatal($"HTTP Request error: {e.Message}", e);
-                App.ShowMessageError("No se pudo establecer conexión con el servidor", "Error de conexión");
-                return false;
+            } catch (HttpRequestException) {
+                throw new HttpRequestException();
             }
         }
 
